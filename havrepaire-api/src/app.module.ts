@@ -11,6 +11,8 @@ import { User } from './resources/users/entities/user.entity';
 import { Like } from './resources/likes/entities/like.entity';
 import { Comment } from './resources/comments/entities/comment.entity';
 import { Article } from './resources/articles/entities/article.entity';
+import { Illustration } from './resources/illustrations/entities/illustration.entity';
+import { IllustrationsModule } from './resources/illustrations/illustrations.module';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { Article } from './resources/articles/entities/article.entity';
       url: process.env.DB_CONNECTION_STRING,
       port: Number(process.env.DB_PORT),
       database: process.env.DB_NAME,
-      entities: [User, Like, Comment, Article],
+      entities: [User, Like, Comment, Article, Illustration],
       retryAttempts: 5,
       synchronize: true,
     }),
@@ -32,6 +34,7 @@ import { Article } from './resources/articles/entities/article.entity';
     LikesModule,
     CommentsModule,
     ArticlesModule,
+    IllustrationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
