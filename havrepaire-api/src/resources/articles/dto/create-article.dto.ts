@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { State } from "../enums/state.enum";
 import { Category } from "../enums/category.enum";
+import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
 
 export class CreateArticleDto {
     titleFr: string;
@@ -9,5 +10,5 @@ export class CreateArticleDto {
     parapraphEn?: string;
     categories?: Category[];
     state?: State;
-    illustrationId?: string|ObjectId;
+    illustration?: Illustration;
 }

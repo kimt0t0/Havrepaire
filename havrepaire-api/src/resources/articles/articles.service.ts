@@ -2,9 +2,8 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Article } from './schemas/article.schema';
-import { User } from '../users/schemas/user.schema';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
@@ -13,8 +12,6 @@ export class ArticlesService {
   constructor(
     @InjectModel(Article.name)
     private articleModel: Model<Article>,
-    @InjectModel(User.name)
-    private userModel: Model<User>,
   ) {}
 
   async create(createArticleDto: CreateArticleDto): Promise<Article> {
@@ -23,25 +20,23 @@ export class ArticlesService {
       const createdArticle = await article.save();
       return createdArticle;
     } catch (e) {
-      throw new Error (`Article could not be created: ${e}`);
+      throw new Error (`Oups, article could not be created: ${e}`);
     }
   }
 
   findAll() {
     try {
-      return this.articleModel.find().exec();
+      return this.articleModel.find().populate('illustration').exec();
     } catch (e) {
-      throw new Error (`Oups, could not load articles: ${e}`);
+      throw new Error (`Oups, articles could not be loaded: ${e}`);
     }
   }
 
-  async findOne(id: string) {
+  findOne(id: string) {
     try {
-      const article = await this.articleModel.findById(new ObjectId(id)).exec();
-      if (!article) throw new NotFoundException(`Article with id ${id} was not found !`);
-      return article;
+      return this.articleModel.findById(new ObjectId(id)).populate('illustration').exec();
     } catch (e) {
-      throw new Error (`Oups, could not find article: ${e}`);
+      throw new Error (`Oups, article could not be found: ${e}`);
     }
   }
 

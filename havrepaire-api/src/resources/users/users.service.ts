@@ -5,12 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { Illustration } from '../illustrations/schemas/illustration.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
+    @InjectModel(Illustration.name)
+    private illustrationModel: Model<Illustration>
   ) {}
   
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -26,7 +29,7 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     try {
-      return this.userModel.find().exec();
+      return this.userModel.find().populate('avatar').exec();
     } catch (e) {
       throw new Error (`Oups, users could not be loaded: ${e}`);
     }
@@ -34,7 +37,7 @@ export class UsersService {
 
   async findOne(id: string): Promise<User> {
     try {
-      const user = await this.userModel.findById(new ObjectId(id)).exec();
+      const user = await this.userModel.findById(new ObjectId(id)).populate('avatar').exec();
       if (!user) throw new NotFoundException(`User with id ${id} was not found !`);
       return user;
     } catch (e) {
@@ -54,7 +57,12 @@ export class UsersService {
 
   async remove(id: string): Promise<User> {
     try {
-      const deletedUser = await this.userModel.findByIdAndDelete(new ObjectId(id)).exec();
+      const deletedUser = await (await this.userModel.findByIdAndDelete(new ObjectId(id))).populated('avatar').exec();
+      try {
+        deletedUser.avatar && await this.illustrationModel.findByIdAndDelete(new ObjectId(deletedUser.avatar._id)).exec();
+      } catch (e) {
+        throw new Error(`Illustration could not be deleted during user deletion: ${e}`);
+      }
       return deletedUser;
     } catch (e) {
       throw new Error (`Oups, user could not be deleted: ${e}`);

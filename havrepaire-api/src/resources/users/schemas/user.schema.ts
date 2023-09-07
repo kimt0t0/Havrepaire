@@ -4,9 +4,7 @@ import { randomUUID } from "crypto";
 import { Gender } from "../enums/gender.enum";
 import { Role } from "../enums/role.enum";
 import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
-import { Article } from "src/resources/articles/schemas/article.schema";
 import { Like } from "src/resources/likes/schemas/like.schema";
-import { Comment } from "src/resources/comments/schemas/comment.schema";
 import { ObjectId } from "mongodb";
 
 @Schema({ timestamps: true })

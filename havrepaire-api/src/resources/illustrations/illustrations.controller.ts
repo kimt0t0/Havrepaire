@@ -19,16 +19,16 @@ export class IllustrationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.illustrationsService.findOne(+id);
+    return this.illustrationsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateIllustrationDto: UpdateIllustrationDto) {
-    return this.illustrationsService.update(+id, updateIllustrationDto);
+    return this.illustrationsService.update(id, updateIllustrationDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.illustrationsService.remove(+id);
+    return this.illustrationsService.remove(id);
   }
 }
