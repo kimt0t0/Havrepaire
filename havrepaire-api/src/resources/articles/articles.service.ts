@@ -25,7 +25,7 @@ export class ArticlesService {
     const article = new this.articleModel(createArticleDto);
     const createdArticle = await article.save();
     // update user
-    await this.userModel.findByIdAndUpdate(new ObjectId(createArticleDto.authorId), { '$push': { 'articles': createdArticle }});
+    await this.userModel.findByIdAndUpdate(new ObjectId(createArticleDto.authorId), { '$push': { 'articleIds': createdArticle }});
     // check result
     if (!article) throw new BadRequestException(createdArticle, `Article could not be created !`);
     return createdArticle
@@ -49,6 +49,8 @@ export class ArticlesService {
 
   async remove(id: string) {
     const deletedArticle = await this.articleModel.findByIdAndDelete(new ObjectId(id)).exec();
+    // update user
+    await this.userModel.findByIdAndUpdate(new ObjectId(deletedArticle.authorId), { '$pop': { 'articles': new ObjectId(id)}});
     return deletedArticle;
   }
 }

@@ -6,6 +6,7 @@ import { Illustration } from "src/resources/illustrations/schemas/illustration.s
 import { Like } from "src/resources/likes/schemas/like.schema";
 import { Comment } from "src/resources/comments/schemas/comment.schema";
 import { ObjectId } from "mongodb";
+import { Category } from "../enums/category.enum";
 
 @Schema({ timestamps: true })
 export class Article {
@@ -22,17 +23,20 @@ export class Article {
     @Prop({length: 120, nullable: false})
     titleEn: string;
 
-    @Prop({nullable: false})
-    parapraphsFr: Array<string>;
+    @Prop({length: 10, nullable: false})
+    parapraphsFr: string[];
 
-    @Prop({nullable: false})
-    parapraphsEn: Array<string>;
+    @Prop({length: 10, nullable: false})
+    parapraphsEn: string[];
+
+    @Prop()
+    categories: Category[];
 
     @Prop()
     state: State;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    author: User;
+    authorId: ObjectId;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' }] })
     illustrationIds: ObjectId[];
