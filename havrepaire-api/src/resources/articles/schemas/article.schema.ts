@@ -24,10 +24,10 @@ export class Article {
     titleEn: string;
 
     @Prop({length: 10, nullable: false})
-    parapraphsFr: string[];
+    parapraphFr: string;
 
     @Prop({length: 10, nullable: false})
-    parapraphsEn: string[];
+    parapraphEn: string;
 
     @Prop()
     categories: Category[];
@@ -35,17 +35,14 @@ export class Article {
     @Prop()
     state: State;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    authorId: ObjectId;
-
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' }] })
-    illustrationIds: ObjectId[];
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' })
+    illustration: Illustration;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
-    likeIds: ObjectId[];
+    likes: Like[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
-    commentIds: ObjectId[];
+    comments: Like[];
 
 }
 

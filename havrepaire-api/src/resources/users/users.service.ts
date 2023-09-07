@@ -14,30 +14,50 @@ export class UsersService {
   ) {}
   
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = new this.userModel(createUserDto);
-    const createdUser = await user.save();
-    if (!user) throw new BadRequestException(createdUser, `User could not be created !`);
-    return createdUser;
+    try {
+      const user = new this.userModel(createUserDto);
+      const createdUser = await user.save();
+      if (!user) throw new BadRequestException(createdUser, `User could not be created !`);
+      return createdUser;
+    } catch (e) {
+      throw new Error (`Oups, user could not be created: ${e}`);
+    }
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    try {
+      return this.userModel.find().exec();
+    } catch (e) {
+      throw new Error (`Oups, users could not be loaded: ${e}`);
+    }
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.userModel.findById(new ObjectId(id)).exec();
-    if (!user) throw new NotFoundException(`User with id ${id} was not found !`);
-    return user;
+    try {
+      const user = await this.userModel.findById(new ObjectId(id)).exec();
+      if (!user) throw new NotFoundException(`User with id ${id} was not found !`);
+      return user;
+    } catch (e) {
+      throw new Error (`Oups, user could not be found: ${e}`);
+    }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.userModel.findByIdAndUpdate(new ObjectId(id), updateUserDto).exec();
-    const updatedUser = await this.userModel.findById(new ObjectId(id)).exec();
-    return updatedUser;
+    try {
+      await this.userModel.findByIdAndUpdate(new ObjectId(id), updateUserDto).exec();
+      const updatedUser = await this.userModel.findById(new ObjectId(id)).exec();
+      return updatedUser;
+    } catch (e) {
+      throw new Error (`Oups, user could not be updated: ${e}`);
+    }
   }
 
   async remove(id: string): Promise<User> {
-    const deletedUser = await this.userModel.findByIdAndDelete(new ObjectId(id)).exec();
-    return deletedUser;
+    try {
+      const deletedUser = await this.userModel.findByIdAndDelete(new ObjectId(id)).exec();
+      return deletedUser;
+    } catch (e) {
+      throw new Error (`Oups, user could not be deleted: ${e}`);
+    }
   }
 }

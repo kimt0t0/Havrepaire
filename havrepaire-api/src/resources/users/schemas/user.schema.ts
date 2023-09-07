@@ -36,14 +36,11 @@ export class User {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' })
     avatar: Illustration;
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }] })
-    articleIds: ObjectId[];
-
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
-    likeIds: ObjectId[];
+    likes: Like[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
-    commentIds: ObjectId[];
+    comments: Like[];
 
 }
 

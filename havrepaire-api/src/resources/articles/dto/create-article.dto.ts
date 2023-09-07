@@ -5,10 +5,9 @@ import { Category } from "../enums/category.enum";
 export class CreateArticleDto {
     titleFr: string;
     titleEn?: string;
-    parapraphsFr: string[];
-    parapraphsEn?: string[];
+    parapraphFr: string;
+    parapraphEn?: string;
     categories?: Category[];
     state?: State;
-    authorId: string|ObjectId;
-    illustrationIds?: string[]|ObjectId[];
+    illustrationId?: string|ObjectId;
 }

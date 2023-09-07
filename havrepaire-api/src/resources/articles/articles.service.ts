@@ -5,9 +5,6 @@ import { Model } from 'mongoose';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Article } from './schemas/article.schema';
 import { User } from '../users/schemas/user.schema';
-import { Illustration } from '../illustrations/schemas/illustration.schema';
-import { Like } from '../likes/schemas/like.schema';
-import { Comment } from '../comments/schemas/comment.schema';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
@@ -21,36 +18,49 @@ export class ArticlesService {
   ) {}
 
   async create(createArticleDto: CreateArticleDto): Promise<Article> {
-    // create and save new article
-    const article = new this.articleModel(createArticleDto);
-    const createdArticle = await article.save();
-    // update user
-    await this.userModel.findByIdAndUpdate(new ObjectId(createArticleDto.authorId), { '$push': { 'articleIds': createdArticle }});
-    // check result
-    if (!article) throw new BadRequestException(createdArticle, `Article could not be created !`);
-    return createdArticle
+    try {
+      const article = new this.articleModel(createArticleDto);
+      const createdArticle = await article.save();
+      return createdArticle;
+    } catch (e) {
+      throw new Error (`Article could not be created: ${e}`);
+    }
   }
 
   findAll() {
-    return this.articleModel.find().exec();
+    try {
+      return this.articleModel.find().exec();
+    } catch (e) {
+      throw new Error (`Oups, could not load articles: ${e}`);
+    }
   }
 
   async findOne(id: string) {
-    const article = await this.articleModel.findById(new ObjectId(id)).exec();
-    if (!article) throw new NotFoundException(`Article with id ${id} was not found !`);
-    return article;
+    try {
+      const article = await this.articleModel.findById(new ObjectId(id)).exec();
+      if (!article) throw new NotFoundException(`Article with id ${id} was not found !`);
+      return article;
+    } catch (e) {
+      throw new Error (`Oups, could not find article: ${e}`);
+    }
   }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
-    await this.articleModel.findByIdAndUpdate(new ObjectId(id), updateArticleDto).exec();
-    const updatedArticle = await this.articleModel.findById(new ObjectId(id)).exec();
-    return updatedArticle;
+    try {
+      await this.articleModel.findByIdAndUpdate(new ObjectId(id), updateArticleDto).exec();
+      const updatedArticle = await this.articleModel.findById(new ObjectId(id)).populate('illustration').exec();
+      return updatedArticle;
+    } catch (e) {
+      throw new Error(`Oups, article could not be updated: ${e}`);
+    }
   }
 
   async remove(id: string) {
-    const deletedArticle = await this.articleModel.findByIdAndDelete(new ObjectId(id)).exec();
-    // update user
-    await this.userModel.findByIdAndUpdate(new ObjectId(deletedArticle.authorId), { '$pop': { 'articles': new ObjectId(id)}});
-    return deletedArticle;
+    try {
+      const deletedArticle = await this.articleModel.findByIdAndDelete(new ObjectId(id)).exec();
+      return deletedArticle;
+    } catch (e) {
+      throw new Error (`Oups, article could not be deleted: ${e}`);
+    }
   }
 }
