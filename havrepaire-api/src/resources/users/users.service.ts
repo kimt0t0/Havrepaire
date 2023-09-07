@@ -10,7 +10,7 @@ import { ObjectId } from 'mongodb';
 export class UsersService {
   constructor(
     @InjectModel(User.name)
-    private userModel: Model<User>
+    private userModel: Model<User>,
   ) {}
   
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -32,7 +32,7 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     await this.userModel.findByIdAndUpdate(new ObjectId(id), updateUserDto).exec();
-    const updatedUser = await this.userModel.findById(new Object(id)).exec();
+    const updatedUser = await this.userModel.findById(new ObjectId(id)).exec();
     return updatedUser;
   }
 

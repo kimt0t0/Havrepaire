@@ -12,8 +12,10 @@ import { ObjectId } from "mongodb";
 @Schema({ timestamps: true })
 export class User {
     
-    @Prop({type: ObjectId,
-    default: () => new ObjectId()})
+    @Prop({
+        type: ObjectId,
+        default: () => new ObjectId()
+    })
     _id: ObjectId;
 
     @Prop({ length: 80, nullable: false, unique: true})
@@ -35,13 +37,13 @@ export class User {
     avatar: Illustration;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }] })
-    articles: Article[];
+    articleIds: ObjectId[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
-    likes: Like[];
+    likeIds: ObjectId[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
-    comments: Comment[];
+    commentIds: ObjectId[];
 
 }
 
