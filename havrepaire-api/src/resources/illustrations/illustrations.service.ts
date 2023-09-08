@@ -52,7 +52,7 @@ export class IllustrationsService {
     }
   }
 
-  findOne(id: string) {
+  findOne(id: string|ObjectId) {
     try {
       return this.illustrationModel.findById(new ObjectId(id)).exec();
     } catch (e) {
@@ -60,7 +60,7 @@ export class IllustrationsService {
     }
   }
 
-  async update(id: string, updateIllustrationDto: UpdateIllustrationDto) {
+  async update(id: string|ObjectId, updateIllustrationDto: UpdateIllustrationDto) {
     try {
       // update and read illustration
       await this.illustrationModel.findByIdAndUpdate(new ObjectId(id), updateIllustrationDto).exec();
@@ -69,13 +69,13 @@ export class IllustrationsService {
       try {
         updateIllustrationDto.userId && await this.userModel.findByIdAndUpdate(new ObjectId(updateIllustrationDto.userId), {'avatar': updatedIllustration}).exec();
       } catch (e) {
-        throw new Error (`User could not be updated during illustration creation: ${e}`)
+        throw new Error (`User could not be updated during illustration update: ${e}`)
       }
       // update article if article illustration
       try {
         updateIllustrationDto.articleId && await this.articleModel.findByIdAndUpdate(new ObjectId(updateIllustrationDto.articleId), {'illustration': updatedIllustration}).exec();
       } catch (e) {
-        throw new Error (`Article could not be updated during illustration creation: ${e}`)
+        throw new Error (`Article could not be updated during illustration update: ${e}`)
       }
       return updatedIllustration;
     } catch (e) {
@@ -83,9 +83,9 @@ export class IllustrationsService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string|ObjectId) {
     try {
-      const deletedIllustration = await this.illustrationModel.findByIdAndDelete(new ObjectId(id)).exec();
+      const deletedIllustration = await this.illustrationModel.findByIdAndDelete(new ObjectId(id)).populate('user', 'article').exec();
       // update user if avatar
       try {
         deletedIllustration.userId && await this.userModel.findByIdAndUpdate(deletedIllustration.userId, {'$delete': 'avatar'});

@@ -1,8 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
 import { Article } from './schemas/article.schema';
 import { ObjectId } from 'mongodb';
 
@@ -26,21 +26,21 @@ export class ArticlesService {
 
   findAll() {
     try {
-      return this.articleModel.find().populate('illustration').exec();
+      return this.articleModel.find().populate('illustration', 'comments').exec();
     } catch (e) {
       throw new Error (`Oups, articles could not be loaded: ${e}`);
     }
   }
 
-  findOne(id: string) {
+  findOne(id: string|ObjectId) {
     try {
-      return this.articleModel.findById(new ObjectId(id)).populate('illustration').exec();
+      return this.articleModel.findById(new ObjectId(id)).populate('illustration', 'comments').exec();
     } catch (e) {
       throw new Error (`Oups, article could not be found: ${e}`);
     }
   }
 
-  async update(id: string, updateArticleDto: UpdateArticleDto) {
+  async update(id: string|ObjectId, updateArticleDto: UpdateArticleDto) {
     try {
       await this.articleModel.findByIdAndUpdate(new ObjectId(id), updateArticleDto).exec();
       const updatedArticle = await this.articleModel.findById(new ObjectId(id)).populate('illustration').exec();
@@ -50,7 +50,7 @@ export class ArticlesService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string|ObjectId) {
     try {
       const deletedArticle = await this.articleModel.findByIdAndDelete(new ObjectId(id)).exec();
       return deletedArticle;

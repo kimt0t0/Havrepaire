@@ -1,22 +1,24 @@
 import mongoose from "mongoose";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { randomUUID } from "crypto";
 import { Language } from "../enums/language.enum";
 import { User } from "src/resources/users/schemas/user.schema";
 import { Article } from "src/resources/articles/schemas/article.schema";
+import { ObjectId } from "mongodb";
 
 @Schema({ timestamps: true })
 export class Comment {
     
-    @Prop({type: 'UUID',
-    default: () => randomUUID()})
-    _id: 'UUID';
+    @Prop({
+        type: ObjectId,
+        default: () => new ObjectId()
+    })
+    _id: ObjectId;
 
-    @Prop({length: 1200, nullable: false})
+    @Prop({length: 500, nullable: false})
     text: string;
 
     @Prop()
-    language: Language;
+    languages: Language[];
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     author: User;

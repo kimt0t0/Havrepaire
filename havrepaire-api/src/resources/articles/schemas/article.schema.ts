@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { State } from "../enums/state.enum";
-import { User } from "src/resources/users/schemas/user.schema";
 import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
 import { Like } from "src/resources/likes/schemas/like.schema";
 import { Comment } from "src/resources/comments/schemas/comment.schema";
@@ -23,10 +22,10 @@ export class Article {
     @Prop({length: 120, nullable: false})
     titleEn: string;
 
-    @Prop({length: 10, nullable: false})
+    @Prop({length: 1200, nullable: false})
     parapraphFr: string;
 
-    @Prop({length: 10, nullable: false})
+    @Prop({length: 1200, nullable: false})
     parapraphEn: string;
 
     @Prop()
@@ -42,7 +41,7 @@ export class Article {
     likes: Like[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
-    comments: Like[];
+    comments: Comment[];
 
 }
 

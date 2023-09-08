@@ -5,6 +5,7 @@ import { Gender } from "../enums/gender.enum";
 import { Role } from "../enums/role.enum";
 import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
 import { Like } from "src/resources/likes/schemas/like.schema";
+import { Comment } from "src/resources/comments/schemas/comment.schema";
 import { ObjectId } from "mongodb";
 
 @Schema({ timestamps: true })
@@ -38,7 +39,7 @@ export class User {
     likes: Like[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
-    comments: Like[];
+    comments: Comment[];
 
 }
 
