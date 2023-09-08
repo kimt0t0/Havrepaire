@@ -20,8 +20,25 @@ export class CommentsService {
   ) {}
 
   async create(createCommentDto: CreateCommentDto) {
+    const {
+      text,
+      languages,
+      authorId,
+      articleId
+    } = createCommentDto;
     try {
-      const comment = new this.commentModel(createCommentDto);
+      // get author
+      const author = await this.userModel.findById(new ObjectId(authorId));
+      if (!author) throw new Error(`Oups, user with id ${authorId} could not be found on comment creation...`);
+      // get article
+      const article = await this.articleModel.findById(new ObjectId(articleId));
+      if (!article) throw new Error(`Oups, article with id ${articleId} could not be found on comment creation...`);
+      const comment = new this.commentModel({
+        text,
+        languages,
+        author,
+        article
+      });
       const createdComment = await comment.save();
       // add to user
       try {
@@ -62,19 +79,10 @@ export class CommentsService {
     try {
       // update and read comment
       await this.commentModel.findByIdAndUpdate(new ObjectId(id), updateCommentDto);
-      const updatedComment = await this.commentModel.findById(new ObjectId(id));
-      // add to user
-      try {
-        updateCommentDto.authorId && await this.userModel.findByIdAndUpdate(new ObjectId(updateCommentDto.authorId), {'$push': {'comments': updatedComment}});
-      } catch (e) {
-        throw new Error (`User could not be updated during comment update: ${e}`);
-      }
-      // add to article
-      try {
-        updateCommentDto.articleId && await this.articleModel.findByIdAndUpdate(new ObjectId(updateCommentDto.articleId), {'$push': {'comments': updatedComment}});
-      } catch (e) {
-        throw new Error (`User could not be updated during comment update: ${e}`);
-      }
+      const updatedComment = await this.commentModel.findById(new ObjectId(id)).populate('author', 'article').exec();
+      // handle mistakes
+      if (updateCommentDto.authorId) throw new Error (`You cannot change comment's author`);
+      if (updateCommentDto.articleId) throw new Error(`You cannot change comment's article`);
       // return updated comment
       return updatedComment;
     } catch (e) {
@@ -87,13 +95,15 @@ export class CommentsService {
       const deletedComment = await this.commentModel.findByIdAndDelete(new ObjectId(id)).populate('author', 'article').exec();
       // update user
       try {
-        deletedComment.author && await this.userModel.findByIdAndUpdate(deletedComment.author._id, {'$delete': {'comments': deletedComment}});
+        const user = await this.userModel.findById(deletedComment.author);
+        console.log(user)
+        deletedComment.author && await this.userModel.findByIdAndUpdate(deletedComment.author._id, {'$pull': {'comments': deletedComment._id}});
       } catch (e) {
         throw new Error (`Comment could not be removed from user with id ${deletedComment.author._id} during comment deletion: ${e}`);
       }
       // update article
       try {
-        deletedComment.article && await this.articleModel.findByIdAndUpdate(deletedComment.article._id, {'$delete': {'comments': deletedComment}});
+        deletedComment.article && await this.articleModel.findByIdAndUpdate(deletedComment.article._id, {'$pull': {'comments': deletedComment._id}});
       } catch (e) {
         throw new Error (`Comment could not be removed from user with id ${deletedComment.article._id} during comment deletion: ${e}`);
       }

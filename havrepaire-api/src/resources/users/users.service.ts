@@ -63,7 +63,7 @@ export class UsersService {
 
   async remove(id: string|ObjectId): Promise<User> {
     try {
-      const deletedUser = await (await this.userModel.findByIdAndDelete(new ObjectId(id))).populated('avatar').exec();
+      const deletedUser = await this.userModel.findByIdAndDelete(new ObjectId(id)).populate('avatar', 'comments').exec();
       // delete avatar
       try {
         deletedUser.avatar && await this.illustrationModel.findByIdAndDelete(new ObjectId(deletedUser.avatar._id)).exec();
@@ -74,7 +74,8 @@ export class UsersService {
       try {
         if (deletedUser.comments) {
           for (const comment of deletedUser.comments) {
-            await this.commentModel.findByIdAndDelete(comment._id);
+            const deletedComment = await this.commentModel.findByIdAndDelete(comment._id);
+            if (!deletedComment) throw new Error (`Comment with id ${comment._id} was not found`);
           }
         }
       } catch (e) {
