@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './resources/users/users.module';
 import { LikesModule } from './resources/likes/likes.module';
 import { CommentsModule } from './resources/comments/comments.module';
@@ -19,6 +20,10 @@ import { IllustrationsModule } from './resources/illustrations/illustrations.mod
         MongooseModule.forRoot(process.env.DB_CONNECTION_STRING, {
             dbName: process.env.DB_NAME,
         }),
+        ThrottlerModule.forRoot([{
+            ttl: 60000, //milliseconds
+            limit: 100, // number of requests allowed per user on all guarded routes
+        }]),
         UsersModule,
         LikesModule,
         CommentsModule,
@@ -28,4 +33,4 @@ import { IllustrationsModule } from './resources/illustrations/illustrations.mod
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
