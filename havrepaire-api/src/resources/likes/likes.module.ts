@@ -7,12 +7,14 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { Article, ArticleSchema } from '../articles/schemas/article.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([
-    { name: Like.name, schema: LikeSchema },
-    { name: User.name, schema: UserSchema },
-    { name: Article.name, schema: ArticleSchema },
-  ])],
-  controllers: [LikesController],
-  providers: [LikesService],
+    imports: [
+        MongooseModule.forFeature([
+            { name: Like.name, schema: LikeSchema },
+            { name: User.name, schema: UserSchema },
+            { name: Article.name, schema: ArticleSchema },
+        ]),
+    ],
+    controllers: [LikesController],
+    providers: [LikesService],
 })
 export class LikesModule {}

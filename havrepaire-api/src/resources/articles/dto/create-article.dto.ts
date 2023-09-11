@@ -1,7 +1,7 @@
-import { ObjectId } from "mongodb";
-import { State } from "../enums/state.enum";
-import { Category } from "../enums/category.enum";
-import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
+import { ObjectId } from 'mongodb';
+import { State } from '../enums/state.enum';
+import { Category } from '../enums/category.enum';
+import { Illustration } from 'src/resources/illustrations/schemas/illustration.schema';
 
 export class CreateArticleDto {
     titleFr: string;

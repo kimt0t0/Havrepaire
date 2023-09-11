@@ -10,20 +10,22 @@ import { ArticlesModule } from './resources/articles/articles.module';
 import { IllustrationsModule } from './resources/illustrations/illustrations.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.dev'],
-      isGlobal: true,
-      cache: true
-    }),
-    MongooseModule.forRoot(process.env.DB_CONNECTION_STRING, { dbName: process.env.DB_NAME }),
-    UsersModule,
-    LikesModule,
-    CommentsModule,
-    ArticlesModule,
-    IllustrationsModule
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot({
+            envFilePath: ['.env', '.env.dev'],
+            isGlobal: true,
+            cache: true,
+        }),
+        MongooseModule.forRoot(process.env.DB_CONNECTION_STRING, {
+            dbName: process.env.DB_NAME,
+        }),
+        UsersModule,
+        LikesModule,
+        CommentsModule,
+        ArticlesModule,
+        IllustrationsModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}

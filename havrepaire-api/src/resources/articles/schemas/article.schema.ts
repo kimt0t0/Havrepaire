@@ -1,31 +1,30 @@
-import mongoose from "mongoose";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { State } from "../enums/state.enum";
-import { Illustration } from "src/resources/illustrations/schemas/illustration.schema";
-import { Like } from "src/resources/likes/schemas/like.schema";
-import { Comment } from "src/resources/comments/schemas/comment.schema";
-import { ObjectId } from "mongodb";
-import { Category } from "../enums/category.enum";
+import mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { State } from '../enums/state.enum';
+import { Illustration } from 'src/resources/illustrations/schemas/illustration.schema';
+import { Like } from 'src/resources/likes/schemas/like.schema';
+import { Comment } from 'src/resources/comments/schemas/comment.schema';
+import { ObjectId } from 'mongodb';
+import { Category } from '../enums/category.enum';
 
 @Schema({ timestamps: true })
 export class Article {
-    
     @Prop({
         type: ObjectId,
-        default: () => new ObjectId()
+        default: () => new ObjectId(),
     })
     _id: ObjectId;
 
-    @Prop({length: 120, nullable: false})
+    @Prop({ length: 120, nullable: false })
     titleFr: string;
 
-    @Prop({length: 120, nullable: false})
+    @Prop({ length: 120, nullable: false })
     titleEn: string;
 
-    @Prop({length: 1200, nullable: false})
+    @Prop({ length: 1200, nullable: false })
     parapraphFr: string;
 
-    @Prop({length: 1200, nullable: false})
+    @Prop({ length: 1200, nullable: false })
     parapraphEn: string;
 
     @Prop()
@@ -42,7 +41,6 @@ export class Article {
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
     comments: Comment[];
-
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);

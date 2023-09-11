@@ -9,6 +9,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     avatar?: Illustration;
     likes?: Like[];
     comments?: Comment[];
-    authorId?: string|ObjectId;
-    articleId?: string|ObjectId;
+    authorId?: string | ObjectId;
+    articleId?: string | ObjectId;
 }

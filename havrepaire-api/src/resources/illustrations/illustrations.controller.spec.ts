@@ -3,18 +3,20 @@ import { IllustrationsController } from './illustrations.controller';
 import { IllustrationsService } from './illustrations.service';
 
 describe('IllustrationsController', () => {
-  let controller: IllustrationsController;
+    let controller: IllustrationsController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [IllustrationsController],
-      providers: [IllustrationsService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [IllustrationsController],
+            providers: [IllustrationsService],
+        }).compile();
 
-    controller = module.get<IllustrationsController>(IllustrationsController);
-  });
+        controller = module.get<IllustrationsController>(
+            IllustrationsController,
+        );
+    });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(controller).toBeDefined();
+    });
 });
