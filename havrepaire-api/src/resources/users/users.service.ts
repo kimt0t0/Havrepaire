@@ -27,7 +27,7 @@ export class UsersService {
         private commentModel: Model<Comment>,
         @InjectModel(Like.name)
         private likeModel: Model<Like>,
-    ) {}
+    ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         try {
@@ -131,6 +131,37 @@ export class UsersService {
             } catch (e) {
                 throw new Error(
                     `Oups, user's comments could not be deleted: ${e}`,
+                );
+            }
+            // delete likes
+            try {
+                if (deletedUser.likes) {
+                    for (const like of deletedUser.likes) {
+                        const deletedLike = await this.likeModel
+                            .findByIdAndDelete(like._id)
+                            .populate('article')
+                            .exec();
+                        if (!deletedLike)
+                            throw new Error(
+                                `Like with id ${like._id} was not found`,
+                            );
+                        try {
+                            await this.articleModel
+                                .findByIdAndUpdate(deletedLike.article._id, {
+                                    $pull: { likes: deletedLike._id },
+                                })
+                                .populate('likes')
+                                .exec();
+                        } catch (e) {
+                            throw new Error(
+                                `Oups, like with id ${like._id}could not be removed from article with id ${deletedLike.article._id}:${e}`,
+                            );
+                        }
+                    }
+                }
+            } catch (e) {
+                throw new Error(
+                    `Oups, user's likes could not be deleted: ${e}`,
                 );
             }
             return deletedUser;

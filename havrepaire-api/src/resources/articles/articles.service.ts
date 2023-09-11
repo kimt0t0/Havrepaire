@@ -7,6 +7,7 @@ import { Article } from './schemas/article.schema';
 import { ObjectId } from 'mongodb';
 import { User } from '../users/schemas/user.schema';
 import { Comment } from '../comments/schemas/comment.schema';
+import { Like } from '../likes/schemas/like.schema';
 
 @Injectable()
 export class ArticlesService {
@@ -17,7 +18,9 @@ export class ArticlesService {
         private userModel: Model<User>,
         @InjectModel(Comment.name)
         private commentModel: Model<Comment>,
-    ) {}
+        @InjectModel(Like.name)
+        private likeModel: Model<Like>,
+    ) { }
 
     async create(createArticleDto: CreateArticleDto): Promise<Article> {
         try {
@@ -100,6 +103,37 @@ export class ArticlesService {
             } catch (e) {
                 throw new Error(
                     `Oups, user's comments could not be deleted: ${e}`,
+                );
+            }
+            // delete likes
+            try {
+                if (deletedArticle.likes) {
+                    for (const like of deletedArticle.likes) {
+                        const deletedLike = await this.likeModel
+                            .findByIdAndDelete(like._id)
+                            .populate('author')
+                            .exec();
+                        if (!deletedLike)
+                            throw new Error(
+                                `Like with id ${like._id} was not found`,
+                            );
+                        try {
+                            await this.userModel
+                                .findByIdAndUpdate(deletedLike.author._id, {
+                                    $pull: { likes: deletedLike._id },
+                                })
+                                .populate('likes')
+                                .exec();
+                        } catch (e) {
+                            throw new Error(
+                                `Oups, like with id ${like._id}could not be removed from user with id ${deletedLike.author._id}:${e}`,
+                            );
+                        }
+                    }
+                }
+            } catch (e) {
+                throw new Error(
+                    `Oups, user's likes could not be deleted: ${e}`,
                 );
             }
             return deletedArticle;
