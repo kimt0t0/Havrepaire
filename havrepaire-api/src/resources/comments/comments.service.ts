@@ -91,7 +91,9 @@ export class CommentsService {
         try {
             return this.commentModel.findById(new ObjectId(id));
         } catch (e) {
-            throw new Error(`Oups, comment with id ${id} could not be found: ${e}`);
+            throw new Error(
+                `Oups, comment with id ${id} could not be found: ${e}`,
+            );
         }
     }
 
@@ -126,9 +128,7 @@ export class CommentsService {
                 .exec();
             // update user
             try {
-                await this.userModel.findById(
-                    deletedComment.author,
-                );
+                await this.userModel.findById(deletedComment.author);
                 deletedComment.author &&
                     (await this.userModel.findByIdAndUpdate(
                         deletedComment.author._id,

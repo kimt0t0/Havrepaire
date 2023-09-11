@@ -16,49 +16,63 @@ export class LikesService {
         private articleModel: Model<Article>,
         @InjectModel(User.name)
         private userModel: Model<User>,
-    ) { }
+    ) {}
 
     async create(createLikeDto: CreateLikeDto) {
         const { articleId, authorId } = createLikeDto;
         try {
             // check if like already exists from user on article
             // if like exists remove it:
-            const targetedArticle = await this.articleModel.findById(new ObjectId(articleId)).populate('likes');
+            const targetedArticle = await this.articleModel
+                .findById(new ObjectId(articleId))
+                .populate('likes');
             for (let like of targetedArticle.likes) {
                 if (like.author._id.toString() === authorId) {
                     const existingLike = like;
-                    console.log(existingLike);
                     this.remove(existingLike._id);
                     return null;
                 }
             }
             // else create new like:
-            const article = await this.articleModel.findById(new ObjectId(articleId));
-            if (!article) throw new Error(`Oups, article with id ${articleId} could not be found on like creation...`);
-            const author = await this.userModel.findById(new ObjectId(authorId));
-            if (!author) throw new Error(`Oups, user with id ${authorId} could not be found on like creation...`);
+            const article = await this.articleModel.findById(
+                new ObjectId(articleId),
+            );
+            if (!article)
+                throw new Error(
+                    `Oups, article with id ${articleId} could not be found on like creation...`,
+                );
+            const author = await this.userModel.findById(
+                new ObjectId(authorId),
+            );
+            if (!author)
+                throw new Error(
+                    `Oups, user with id ${authorId} could not be found on like creation...`,
+                );
             const newLike = new this.likeModel({
                 author,
-                article
+                article,
             });
             const createdLike = await newLike.save();
             // add to user:
             try {
-                await this.userModel.findByIdAndUpdate(
-                    new ObjectId(authorId),
-                    { $push: { likes: createdLike } }
-                )
+                await this.userModel.findByIdAndUpdate(new ObjectId(authorId), {
+                    $push: { likes: createdLike },
+                });
             } catch (e) {
-                throw new Error(`User could not be updated during like creation: ${e}`);
+                throw new Error(
+                    `User could not be updated during like creation: ${e}`,
+                );
             }
             // add to article:
             try {
                 await this.articleModel.findByIdAndUpdate(
                     new ObjectId(articleId),
-                    { $push: { likes: createdLike } }
-                )
+                    { $push: { likes: createdLike } },
+                );
             } catch (e) {
-                throw new Error(`Article could not be updated during like creation: ${e}`);
+                throw new Error(
+                    `Article could not be updated during like creation: ${e}`,
+                );
             }
             // return created like:
             return createdLike;
@@ -79,18 +93,21 @@ export class LikesService {
         try {
             return this.likeModel.findById(new ObjectId(id));
         } catch (e) {
-            throw new Error(`Oups, like with id ${id} could not be found: ${e}`);
+            throw new Error(
+                `Oups, like with id ${id} could not be found: ${e}`,
+            );
         }
     }
 
     async remove(id: string | ObjectId) {
         try {
-            const deletedLike = await this.likeModel.findByIdAndDelete(new ObjectId(id)).populate('author', 'article').exec();
+            const deletedLike = await this.likeModel
+                .findByIdAndDelete(new ObjectId(id))
+                .populate('author', 'article')
+                .exec();
             // update user
             try {
-                await this.userModel.findById(
-                    deletedLike.author,
-                );
+                await this.userModel.findById(deletedLike.author);
                 deletedLike.author &&
                     (await this.userModel.findByIdAndUpdate(
                         deletedLike.author._id,

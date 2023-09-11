@@ -6,16 +6,19 @@ import {
     Patch,
     Param,
     Delete,
+    UseGuards,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './schemas/article.schema';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('articles')
 export class ArticlesController {
-    constructor(private readonly articlesService: ArticlesService) {}
+    constructor(private readonly articlesService: ArticlesService) { }
 
+    @UseGuards(AuthGuard)
     @Post()
     create(@Body() createArticleDto: CreateArticleDto): Promise<Article> {
         return this.articlesService.create(createArticleDto);
@@ -31,6 +34,7 @@ export class ArticlesController {
         return this.articlesService.findOne(id);
     }
 
+    @UseGuards(AuthGuard)
     @Patch(':id')
     update(
         @Param('id') id: string,
@@ -39,6 +43,7 @@ export class ArticlesController {
         return this.articlesService.update(id, updateArticleDto);
     }
 
+    @UseGuards(AuthGuard)
     @Delete(':id')
     remove(@Param('id') id: string): Promise<Article> {
         return this.articlesService.remove(id);

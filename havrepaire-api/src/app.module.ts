@@ -9,6 +9,7 @@ import { LikesModule } from './resources/likes/likes.module';
 import { CommentsModule } from './resources/comments/comments.module';
 import { ArticlesModule } from './resources/articles/articles.module';
 import { IllustrationsModule } from './resources/illustrations/illustrations.module';
+import { AuthModule } from './resources/auth/auth.module';
 
 @Module({
     imports: [
@@ -20,10 +21,13 @@ import { IllustrationsModule } from './resources/illustrations/illustrations.mod
         MongooseModule.forRoot(process.env.DB_CONNECTION_STRING, {
             dbName: process.env.DB_NAME,
         }),
-        ThrottlerModule.forRoot([{
-            ttl: 60000, //milliseconds
-            limit: 100, // number of requests allowed per user on all guarded routes
-        }]),
+        ThrottlerModule.forRoot([
+            {
+                ttl: 60000, //milliseconds
+                limit: 100, // number of requests allowed per user on all guarded routes
+            },
+        ]),
+        AuthModule,
         UsersModule,
         LikesModule,
         CommentsModule,

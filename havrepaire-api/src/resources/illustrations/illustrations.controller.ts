@@ -6,15 +6,18 @@ import {
     Patch,
     Param,
     Delete,
+    UseGuards,
 } from '@nestjs/common';
 import { IllustrationsService } from './illustrations.service';
 import { CreateIllustrationDto } from './dto/create-illustration.dto';
 import { UpdateIllustrationDto } from './dto/update-illustration.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('illustrations')
 export class IllustrationsController {
-    constructor(private readonly illustrationsService: IllustrationsService) {}
+    constructor(private readonly illustrationsService: IllustrationsService) { }
 
+    @UseGuards(AuthGuard)
     @Post()
     create(@Body() createIllustrationDto: CreateIllustrationDto) {
         return this.illustrationsService.create(createIllustrationDto);
@@ -30,6 +33,7 @@ export class IllustrationsController {
         return this.illustrationsService.findOne(id);
     }
 
+    @UseGuards(AuthGuard)
     @Patch(':id')
     update(
         @Param('id') id: string,
@@ -38,6 +42,7 @@ export class IllustrationsController {
         return this.illustrationsService.update(id, updateIllustrationDto);
     }
 
+    @UseGuards(AuthGuard)
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.illustrationsService.remove(id);
