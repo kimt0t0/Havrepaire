@@ -17,7 +17,7 @@ export class CommentsService {
         private userModel: Model<User>,
         @InjectModel(Article.name)
         private articleModel: Model<Article>,
-    ) {}
+    ) { }
 
     async create(createCommentDto: CreateCommentDto) {
         const { text, languages, authorId, articleId } = createCommentDto;
@@ -91,7 +91,7 @@ export class CommentsService {
         try {
             return this.commentModel.findById(new ObjectId(id));
         } catch (e) {
-            throw new Error(`Oups, comment could not be found: ${e}`);
+            throw new Error(`Oups, comment with id ${id} could not be found: ${e}`);
         }
     }
 
@@ -126,10 +126,9 @@ export class CommentsService {
                 .exec();
             // update user
             try {
-                const user = await this.userModel.findById(
+                await this.userModel.findById(
                     deletedComment.author,
                 );
-                console.log(user);
                 deletedComment.author &&
                     (await this.userModel.findByIdAndUpdate(
                         deletedComment.author._id,
@@ -137,7 +136,7 @@ export class CommentsService {
                     ));
             } catch (e) {
                 throw new Error(
-                    `Comment could not be removed from user with id ${deletedComment.author._id} during comment deletion: ${e}`,
+                    `Comment with id ${id} could not be removed from user with id ${deletedComment.author} during comment deletion: ${e}`,
                 );
             }
             // update article
@@ -149,7 +148,7 @@ export class CommentsService {
                     ));
             } catch (e) {
                 throw new Error(
-                    `Comment could not be removed from user with id ${deletedComment.article._id} during comment deletion: ${e}`,
+                    `Comment could not be removed from article with id ${deletedComment.article._id} during comment deletion: ${e}`,
                 );
             }
             // return deleted object
