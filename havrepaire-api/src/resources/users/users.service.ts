@@ -3,12 +3,14 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt';
+import { maskEmail2 } from 'maskdata';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './schemas/user.schema';
 import { Illustration } from '../illustrations/schemas/illustration.schema';
 import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
@@ -31,7 +33,25 @@ export class UsersService {
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         try {
-            const user = new this.userModel(createUserDto);
+            const {
+                username,
+                password,
+                email,
+                gender,
+                pronouns,
+                role
+            } = createUserDto;
+            const hash = await bcrypt.hash(password, 15);
+            const maskedEmail = maskEmail2(email);
+            const userData = {
+                username,
+                hash,
+                maskedEmail,
+                gender,
+                pronouns,
+                role
+            };
+            const user = new this.userModel(userData);
             const createdUser = await user.save();
             if (!user)
                 throw new BadRequestException(

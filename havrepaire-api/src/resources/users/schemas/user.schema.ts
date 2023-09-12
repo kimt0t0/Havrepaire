@@ -20,7 +20,10 @@ export class User {
     username: string;
 
     @Prop({ length: 120, nullable: false, unique: true })
-    email: string;
+    maskedEmail: string;
+
+    @Prop({ length: 256, nullable: false })
+    hash: string;
 
     @Prop()
     gender: Gender;
