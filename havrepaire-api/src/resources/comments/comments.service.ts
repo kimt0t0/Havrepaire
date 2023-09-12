@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,10 +7,13 @@ import { Comment } from './schemas/comment.schema';
 import { User } from '../users/schemas/user.schema';
 import { Article } from '../articles/schemas/article.schema';
 import { ObjectId } from 'mongodb';
+import { decodeToken } from 'src/utils/token.utils';
+import { REQUEST } from '@nestjs/core';
 
 @Injectable()
 export class CommentsService {
     constructor(
+        @Inject(REQUEST) private request,
         @InjectModel(Comment.name)
         private commentModel: Model<Comment>,
         @InjectModel(User.name)
@@ -99,20 +102,23 @@ export class CommentsService {
 
     async update(id: string | ObjectId, updateCommentDto: UpdateCommentDto) {
         try {
-            // update and read comment
+            // get userId from request
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            // check if user id matches with comment author's id
+            const comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
+            if (decodedToken._id !== comment.author._id.toString()) throw new Error(`User must be authenticated and must be admin or comment's author to modify it.`);
+            // update comment
             await this.commentModel.findByIdAndUpdate(
                 new ObjectId(id),
                 updateCommentDto,
             );
+            // read updated comment
             const updatedComment = await this.commentModel
                 .findById(new ObjectId(id))
                 .populate('author', 'article')
                 .exec();
-            // handle mistakes
-            if (updateCommentDto.authorId)
-                throw new Error(`You cannot change comment's author`);
-            if (updateCommentDto.articleId)
-                throw new Error(`You cannot change comment's article`);
             // return updated comment
             return updatedComment;
         } catch (e) {
@@ -122,6 +128,14 @@ export class CommentsService {
 
     async remove(id: string | ObjectId) {
         try {
+            // get userId from request
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            // check if user id matches with comment author's id
+            const comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
+            if (decodedToken._id !== comment.author._id.toString()) throw new Error(`User must be authenticated and must be admin or comment's author to modify it.`);
+            // delete comment
             const deletedComment = await this.commentModel
                 .findByIdAndDelete(new ObjectId(id))
                 .populate('author', 'article')
