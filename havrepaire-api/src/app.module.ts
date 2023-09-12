@@ -10,6 +10,8 @@ import { CommentsModule } from './resources/comments/comments.module';
 import { ArticlesModule } from './resources/articles/articles.module';
 import { IllustrationsModule } from './resources/illustrations/illustrations.module';
 import { AuthModule } from './resources/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
     imports: [
@@ -35,6 +37,12 @@ import { AuthModule } from './resources/auth/auth.module';
         IllustrationsModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: RolesGuard,
+        },
+    ],
 })
 export class AppModule { }

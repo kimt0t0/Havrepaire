@@ -29,7 +29,7 @@ export class AuthService {
             const user = await this.userModel.findOne({ username });
             if (!user) throw new NotFoundException(`Oups, user with username ${username} was not found !`);
 
-            const payload = { sub: user._id, username: user.username, role: user.role };
+            const payload = { _id: user._id, username: user.username, role: user.role };
             return {
                 access_token: await this.jwtService.signAsync(payload),
             };

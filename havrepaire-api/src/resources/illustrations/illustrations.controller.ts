@@ -11,7 +11,7 @@ import {
 import { IllustrationsService } from './illustrations.service';
 import { CreateIllustrationDto } from './dto/create-illustration.dto';
 import { UpdateIllustrationDto } from './dto/update-illustration.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Controller('illustrations')
 export class IllustrationsController {

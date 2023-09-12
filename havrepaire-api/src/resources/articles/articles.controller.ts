@@ -12,13 +12,17 @@ import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './schemas/article.schema';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from '../users/enums/role.enum';
 
 @Controller('articles')
 export class ArticlesController {
     constructor(private readonly articlesService: ArticlesService) { }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Post()
     create(@Body() createArticleDto: CreateArticleDto): Promise<Article> {
         return this.articlesService.create(createArticleDto);
@@ -34,7 +38,8 @@ export class ArticlesController {
         return this.articlesService.findOne(id);
     }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Patch(':id')
     update(
         @Param('id') id: string,
@@ -43,7 +48,8 @@ export class ArticlesController {
         return this.articlesService.update(id, updateArticleDto);
     }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Delete(':id')
     remove(@Param('id') id: string): Promise<Article> {
         return this.articlesService.remove(id);
