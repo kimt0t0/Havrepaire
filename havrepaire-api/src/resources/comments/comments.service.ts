@@ -3,12 +3,14 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
+import { REQUEST } from '@nestjs/core';
 import { Comment } from './schemas/comment.schema';
 import { User } from '../users/schemas/user.schema';
 import { Article } from '../articles/schemas/article.schema';
-import { ObjectId } from 'mongodb';
-import { REQUEST } from '@nestjs/core';
 import { checkAuthor } from 'src/utils/author.utils';
+import { decodeToken } from 'src/utils/token.utils';
+import { Role } from '../users/enums/role.enum';
 
 @Injectable()
 export class CommentsService {
@@ -83,7 +85,7 @@ export class CommentsService {
         try {
             return this.commentModel
                 .find()
-                .populate('author', 'article')
+                .populate('article')
                 .exec();
         } catch (e) {
             throw new Error(`Oups, comments could not be loaded: ${e}`);
@@ -92,7 +94,7 @@ export class CommentsService {
 
     findOne(id: string | ObjectId) {
         try {
-            return this.commentModel.findById(new ObjectId(id));
+            return this.commentModel.findById(new ObjectId(id)).populate('artice').exec();
         } catch (e) {
             throw new Error(
                 `Oups, comment with id ${id} could not be found: ${e}`,
@@ -105,8 +107,10 @@ export class CommentsService {
             // check if authenticated user is comment's author
             const request = this.request;
             const comment: Comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
-            const isAuthor: boolean = checkAuthor(request, comment);
-            if (!isAuthor) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const userToken = await this.userModel.findById(new ObjectId(decodedToken._id));
+            if (decodedToken._id !== comment.author._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
             // update comment
             await this.commentModel.findByIdAndUpdate(
                 new ObjectId(id),
@@ -129,8 +133,10 @@ export class CommentsService {
             // check if authenticated user is comment's author
             const request = this.request;
             const comment: Comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
-            const isAuthor: boolean = checkAuthor(request, comment);
-            if (!isAuthor) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to delete it.`);
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const userToken = await this.userModel.findById(new ObjectId(decodedToken._id));
+            if (decodedToken._id !== comment.author._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
             // delete comment
             const deletedComment = await this.commentModel
                 .findByIdAndDelete(new ObjectId(id))

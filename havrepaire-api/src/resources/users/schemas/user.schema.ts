@@ -28,7 +28,7 @@ export class User {
     @Prop({ length: 80, nullable: true })
     pronouns: string;
 
-    @Prop()
+    @Prop({ default: Role.GHOST })
     role: Role;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' })

@@ -10,7 +10,6 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupAuthDto } from './dto/signup-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 
 @Controller('auth')
@@ -22,4 +21,5 @@ export class AuthController {
     create(@Body() loginAuthDto: LoginAuthDto) {
         return this.authService.login(loginAuthDto);
     }
+
 }

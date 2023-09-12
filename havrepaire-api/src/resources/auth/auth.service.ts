@@ -1,5 +1,4 @@
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { SignupAuthDto } from './dto/signup-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../users/schemas/user.schema';
@@ -13,10 +12,6 @@ export class AuthService {
         @InjectModel(User.name)
         private userModel: Model<User>,
     ) { }
-
-    async signup(signupAuthDto: SignupAuthDto) {
-        return 'This action adds a new auth';
-    }
 
     async login(loginAuthDto: LoginAuthDto) {
         const {
