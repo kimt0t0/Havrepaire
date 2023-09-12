@@ -19,9 +19,7 @@ export class RolesGuard implements CanActivate {
         }
         const datas = context.switchToHttp().getRequest();
         const token = datas.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
-        console.log(`token: ${token}`)
         const decodedToken = decodeToken(token);
-        console.log(`Expected roles: ${requiredRoles} --- User role: ${JSON.stringify(decodedToken)}`);
-        return requiredRoles.some((role) => decodedToken === role);
+        return requiredRoles.some((role) => decodedToken.role === role);
     }
 }
