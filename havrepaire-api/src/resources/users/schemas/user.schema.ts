@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
 import { Gender } from '../enums/gender.enum';
 import { Role } from '../enums/role.enum';
 import { Illustration } from 'src/resources/illustrations/schemas/illustration.schema';
