@@ -8,7 +8,6 @@ import { REQUEST } from '@nestjs/core';
 import { Comment } from './schemas/comment.schema';
 import { User } from '../users/schemas/user.schema';
 import { Article } from '../articles/schemas/article.schema';
-import { checkAuthor } from 'src/utils/author.utils';
 import { decodeToken } from 'src/utils/token.utils';
 import { Role } from '../users/enums/role.enum';
 
@@ -28,9 +27,13 @@ export class CommentsService {
         const { text, languages, authorId, articleId } = createCommentDto;
         try {
             // get author
-            const author = await this.userModel.findById(
-                new ObjectId(authorId),
-            );
+            const author = await this.userModel
+                .findById(
+                    new ObjectId(authorId),
+                )
+                .select('-hash')
+                .select('-email')
+                .select('-id');
             if (!author)
                 throw new Error(
                     `Oups, user with id ${authorId} could not be found on comment creation...`,
@@ -109,7 +112,13 @@ export class CommentsService {
             const comment: Comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
             const decodedToken = decodeToken(token);
-            const userToken = await this.userModel.findById(new ObjectId(decodedToken._id));
+            const userToken = await this.userModel
+                .findById(
+                    new ObjectId(decodedToken._id)
+                )
+                .select('-hash')
+                .select('-email')
+                .select('-id');
             if (decodedToken._id !== comment.author._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
             // update comment
             await this.commentModel.findByIdAndUpdate(
@@ -131,8 +140,8 @@ export class CommentsService {
     async remove(id: string | ObjectId) {
         try {
             // check if authenticated user is comment's author
-            const request = this.request;
             const comment: Comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
+            const request = this.request;
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
             const decodedToken = decodeToken(token);
             const userToken = await this.userModel.findById(new ObjectId(decodedToken._id));
@@ -144,7 +153,11 @@ export class CommentsService {
                 .exec();
             // update user
             try {
-                await this.userModel.findById(deletedComment.author);
+                await this.userModel
+                    .findById(deletedComment.author)
+                    .select('-hash')
+                    .select('-email')
+                    .select('-id');
                 deletedComment.author &&
                     (await this.userModel.findByIdAndUpdate(
                         deletedComment.author._id,

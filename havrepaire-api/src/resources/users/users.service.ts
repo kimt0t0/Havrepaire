@@ -1,13 +1,17 @@
 import {
     BadRequestException,
+    Inject,
     Injectable,
+    NotAcceptableException,
     NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
-import { maskEmail2 } from 'maskdata';
+// import { maskEmail2 } from 'maskdata';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
@@ -15,10 +19,13 @@ import { Illustration } from '../illustrations/schemas/illustration.schema';
 import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
 import { Article } from '../articles/schemas/article.schema';
+import { decodeToken } from 'src/utils/token.utils';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UsersService {
     constructor(
+        @Inject(REQUEST) private request,
         @InjectModel(User.name)
         private userModel: Model<User>,
         @InjectModel(Article.name)
@@ -32,6 +39,7 @@ export class UsersService {
     ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
+        if (createUserDto.role === Role.ADMIN) throw new NotAcceptableException(`You cannot create an admin account. If you need one please contact the developer.`);
         try {
             const {
                 username,
@@ -42,22 +50,26 @@ export class UsersService {
                 role
             } = createUserDto;
             const hash = await bcrypt.hash(password, 15);
-            const maskedEmail = maskEmail2(email);
+            // const maskedEmail = maskEmail2(email);
+            // masking email caused index mistaken errors in db
             const userData = {
                 username,
                 hash,
-                maskedEmail,
+                email,
                 gender,
                 pronouns,
                 role
             };
             const user = new this.userModel(userData);
-            const createdUser = await user.save();
+            let createdUser = await user.save();
             if (!user)
                 throw new BadRequestException(
                     createdUser,
                     `User could not be created !`,
                 );
+            delete createdUser.hash;
+            delete createdUser.email;
+            delete createdUser.id;
             return createdUser;
         } catch (e) {
             throw new Error(`Oups, user could not be created: ${e}`);
@@ -66,7 +78,13 @@ export class UsersService {
 
     async findAll(): Promise<User[]> {
         try {
-            return this.userModel.find().populate('avatar', 'comments').exec();
+            return this.userModel
+                .find()
+                .select('-hash')
+                .select('-email')
+                .select('-id')
+                .populate('avatar', 'comments')
+                .exec();
         } catch (e) {
             throw new Error(`Oups, users could not be loaded: ${e}`);
         }
@@ -76,6 +94,9 @@ export class UsersService {
         try {
             const user = await this.userModel
                 .findById(new ObjectId(id))
+                .select('-hash')
+                .select('-email')
+                .select('-id')
                 .populate('avatar', 'comments')
                 .exec();
             if (!user)
@@ -93,11 +114,32 @@ export class UsersService {
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
         try {
+            // check if authenticated user is user themselves
+            const user: User = await this.userModel
+                .findById(new ObjectId(id))
+                .select('-hash')
+                .select('-email')
+                .select('-id');
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const userToken = await this.userModel
+                .findById(
+                    new ObjectId(decodedToken._id)
+                )
+                .select('-hash')
+                .select('-email');
+            if (decodedToken._id !== user._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be the user themselves authenticated of with admin role to update this user.`);
+            if (userToken.role !== Role.ADMIN) throw new UnauthorizedException(`Classic users must enter their password to update their data`);
+            // update user
             await this.userModel
                 .findByIdAndUpdate(new ObjectId(id), updateUserDto)
                 .exec();
             const updatedUser = await this.userModel
                 .findById(new ObjectId(id))
+                .select('-hash')
+                .select('-email')
+                .select('-id')
                 .exec();
             return updatedUser;
         } catch (e) {
@@ -107,11 +149,28 @@ export class UsersService {
 
     async remove(id: string | ObjectId): Promise<User> {
         try {
+            // check if authenticated user is user themselves
+            const user: User = await this.userModel.findById(new ObjectId(id));
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const userToken = await this.userModel
+                .findById(
+                    new ObjectId(decodedToken._id)
+                )
+                .select('-hash')
+                .select('-email');
+            if (decodedToken._id !== user._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be the user themselves authenticated of with admin role to delete this user.`);
+            if (userToken.role !== Role.ADMIN) throw new UnauthorizedException(`Classic users must enter their password to delete their data`);
+            // delete user
             const deletedUser = await this.userModel
                 .findByIdAndDelete(new ObjectId(id))
+                .select('-hash')
+                .select('-email')
+                .select('-id')
                 .populate('avatar', 'comments')
                 .exec();
-            // delete avatar
+            // delete user's avatar
             try {
                 deletedUser.avatar &&
                     (await this.illustrationModel

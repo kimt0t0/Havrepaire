@@ -16,7 +16,7 @@ export class LikesService {
         private articleModel: Model<Article>,
         @InjectModel(User.name)
         private userModel: Model<User>,
-    ) {}
+    ) { }
 
     async create(createLikeDto: CreateLikeDto) {
         const { articleId, authorId } = createLikeDto;
@@ -41,9 +41,13 @@ export class LikesService {
                 throw new Error(
                     `Oups, article with id ${articleId} could not be found on like creation...`,
                 );
-            const author = await this.userModel.findById(
-                new ObjectId(authorId),
-            );
+            const author = await this.userModel
+                .findById(
+                    new ObjectId(authorId),
+                )
+                .select('-hash')
+                .select('-email')
+                .select('-id');
             if (!author)
                 throw new Error(
                     `Oups, user with id ${authorId} could not be found on like creation...`,
@@ -107,7 +111,11 @@ export class LikesService {
                 .exec();
             // update user
             try {
-                await this.userModel.findById(deletedLike.author);
+                await this.userModel
+                    .findById(deletedLike.author)
+                    .select('-hash')
+                    .select('-email')
+                    .select('-id');
                 deletedLike.author &&
                     (await this.userModel.findByIdAndUpdate(
                         deletedLike.author._id,

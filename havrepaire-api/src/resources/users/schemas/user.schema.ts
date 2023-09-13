@@ -20,7 +20,7 @@ export class User {
     username: string;
 
     @Prop({ length: 120, nullable: false, unique: true })
-    maskedEmail: string;
+    email: string;
 
     @Prop({ length: 256, nullable: false })
     hash: string;

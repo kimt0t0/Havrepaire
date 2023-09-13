@@ -23,7 +23,10 @@ export class AuthService {
         if (!password) throw new NotAcceptableException(`User must enter a password.`);
         try {
             // check if user exists
-            const user = await this.userModel.findOne({ username });
+            const user = await this.userModel
+                .findOne({ username })
+                .select('-email')
+                .select('-id');
             if (!user) throw new NotFoundException(`Oups, user with username ${username} was not found !`);
             // check password
             const isMatch = await bcrypt.compare(password, user.hash);
