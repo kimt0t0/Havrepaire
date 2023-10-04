@@ -17,7 +17,7 @@ export class IllustrationsService {
         private userModel: Model<User>,
         @InjectModel(Article.name)
         private articleModel: Model<Article>,
-    ) {}
+    ) { }
 
     async create(createIllustrationDto: CreateIllustrationDto) {
         try {
@@ -131,26 +131,26 @@ export class IllustrationsService {
                 .exec();
             // update user if avatar
             try {
-                deletedIllustration.userId &&
+                deletedIllustration.user &&
                     (await this.userModel.findByIdAndUpdate(
-                        deletedIllustration.userId,
+                        deletedIllustration.user,
                         { $delete: 'avatar' },
                     ));
             } catch (e) {
                 throw new Error(
-                    `Avatar could not be removed from user with id ${deletedIllustration.userId} during illustration deletion: ${e}`,
+                    `Avatar could not be removed from user with id ${deletedIllustration.user} during illustration deletion: ${e}`,
                 );
             }
             // update article if illustration
             try {
-                deletedIllustration.articleId &&
+                deletedIllustration.article &&
                     (await this.articleModel.findByIdAndUpdate(
-                        deletedIllustration.userId,
+                        deletedIllustration.user,
                         { $delete: 'illustration' },
                     ));
             } catch (e) {
                 throw new Error(
-                    `Illustration could not be removed from user with id ${deletedIllustration.articleId} during illustration deletion: ${e}`,
+                    `Illustration could not be removed from user with id ${deletedIllustration.article} during illustration deletion: ${e}`,
                 );
             }
             return deletedIllustration;

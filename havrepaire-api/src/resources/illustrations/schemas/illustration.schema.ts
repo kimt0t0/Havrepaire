@@ -20,10 +20,10 @@ export class Illustration {
     filepath: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    userId: ObjectId;
+    user: User;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Article' })
-    articleId: ObjectId;
+    article: Article;
 }
 
 export const IllustrationSchema = SchemaFactory.createForClass(Illustration);

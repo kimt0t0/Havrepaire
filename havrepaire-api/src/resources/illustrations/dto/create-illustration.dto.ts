@@ -3,13 +3,7 @@ import { ObjectId } from 'mongodb';
 
 export class CreateIllustrationDto {
 
-    @IsString()
-    @Length(3, 20)
-    filename: string;
-
-    @IsString()
-    @MaxLength(255)
-    filepath: string;
+    file: File;
 
     @IsString()
     @Length(24)
