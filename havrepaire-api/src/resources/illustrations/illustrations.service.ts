@@ -124,7 +124,6 @@ export class IllustrationsService {
                 .findByIdAndDelete(new ObjectId(id))
                 .populate('user', 'article')
                 .exec();
-            console.log(JSON.stringify(deletedIllustration));
             // unlink image
             fs.unlinkSync(deletedIllustration.filepath);
             // update user if avatar
