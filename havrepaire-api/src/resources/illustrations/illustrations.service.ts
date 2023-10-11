@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateIllustrationDto } from './dto/create-illustration.dto';
-import { UpdateIllustrationDto } from './dto/update-illustration.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Illustration } from './schemas/illustration.schema';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { User } from '../users/schemas/user.schema';
 import { Article } from '../articles/schemas/article.schema';
+const fs = require('fs');
 
 @Injectable()
 export class IllustrationsService {
@@ -19,11 +19,52 @@ export class IllustrationsService {
         private articleModel: Model<Article>,
     ) { }
 
-    async create(createIllustrationDto: CreateIllustrationDto) {
+    async create(createIllustrationDto: CreateIllustrationDto, file: Express.Multer.File) {
         try {
+            // check if user exists and if user already has avatar, delete former avatar
+            if (createIllustrationDto.userId) {
+                try {
+                    const user = await this.userModel
+                        .findById(
+                            new ObjectId(createIllustrationDto.userId)
+                        )
+                        .exec();
+                    user.avatar && await this.illustrationModel.findByIdAndDelete(
+                        user.avatar
+                    );
+                } catch (e) {
+                    throw new Error(
+                        `Previous avatar of user with id ${createIllustrationDto.userId} could not be removed during illustration creation: ${e}`,
+                    );
+                }
+            }
+            //check if article exists if article already has illustration, delete former illustration
+            if (createIllustrationDto.articleId) {
+                try {
+                    const article =
+                        await this.articleModel
+                            .findById(
+                                new ObjectId(createIllustrationDto.articleId)
+                            )
+                            .exec();
+                    article.illustration && await this.illustrationModel.findByIdAndDelete(
+                        article.illustration
+                    );
+                } catch (e) {
+                    throw new Error(
+                        `Previous illustration of the article with id ${createIllustrationDto.articleId} could not be removed during illustration creation: ${e}`,
+                    );
+                }
+            }
             // create new illustration and save into database
+            const filename: string = file.filename;
+            const filepath: string = file.path;
             const illustration = new this.illustrationModel(
-                createIllustrationDto,
+                {
+                    createIllustrationDto,
+                    filename,
+                    filepath
+                }
             );
             const createdIllustration = await illustration.save();
             // update user if avatar
@@ -77,58 +118,15 @@ export class IllustrationsService {
         }
     }
 
-    async update(
-        id: string | ObjectId,
-        updateIllustrationDto: UpdateIllustrationDto,
-    ) {
-        try {
-            // update and read illustration
-            await this.illustrationModel
-                .findByIdAndUpdate(new ObjectId(id), updateIllustrationDto)
-                .exec();
-            const updatedIllustration = await this.illustrationModel
-                .findById(new ObjectId(id))
-                .exec();
-            // update user if avatar
-            try {
-                updateIllustrationDto.userId &&
-                    (await this.userModel
-                        .findByIdAndUpdate(
-                            new ObjectId(updateIllustrationDto.userId),
-                            { avatar: updatedIllustration },
-                        )
-                        .exec());
-            } catch (e) {
-                throw new Error(
-                    `User could not be updated during illustration update: ${e}`,
-                );
-            }
-            // update article if article illustration
-            try {
-                updateIllustrationDto.articleId &&
-                    (await this.articleModel
-                        .findByIdAndUpdate(
-                            new ObjectId(updateIllustrationDto.articleId),
-                            { illustration: updatedIllustration },
-                        )
-                        .exec());
-            } catch (e) {
-                throw new Error(
-                    `Article could not be updated during illustration update: ${e}`,
-                );
-            }
-            return updatedIllustration;
-        } catch (e) {
-            throw new Error(`Oups, illustration could not be updated: ${e}`);
-        }
-    }
-
     async remove(id: string | ObjectId) {
         try {
             const deletedIllustration = await this.illustrationModel
                 .findByIdAndDelete(new ObjectId(id))
                 .populate('user', 'article')
                 .exec();
+            console.log(JSON.stringify(deletedIllustration));
+            // unlink image
+            fs.unlinkSync(deletedIllustration.filepath);
             // update user if avatar
             try {
                 deletedIllustration.user &&

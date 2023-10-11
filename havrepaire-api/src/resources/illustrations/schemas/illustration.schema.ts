@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 import { Article } from 'src/resources/articles/schemas/article.schema';
@@ -16,7 +15,7 @@ export class Illustration {
     @Prop({ length: 80, nullable: false })
     filename: string;
 
-    @Prop({ length: 256 })
+    @Prop({ length: 256, nullable: false })
     filepath: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

@@ -21,7 +21,7 @@ import { diskStorage } from 'multer';
         MulterModule.registerAsync({
             useFactory: () => ({
                 storage: diskStorage({
-                    destination: './files',
+                    destination: './public/files',
                     filename: (req, file, cb) => {
                         const uniquePrefix = Date.now() + '_' + Math.round(Math.random() * 1E4);
                         cb(null, uniquePrefix + file.originalname);

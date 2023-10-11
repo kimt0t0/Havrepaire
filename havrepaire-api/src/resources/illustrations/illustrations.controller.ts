@@ -3,7 +3,6 @@ import {
     Get,
     Post,
     Body,
-    Patch,
     Param,
     Delete,
     UseGuards,
@@ -15,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { IllustrationsService } from './illustrations.service';
 import { CreateIllustrationDto } from './dto/create-illustration.dto';
-import { UpdateIllustrationDto } from './dto/update-illustration.dto';
 import { AuthGuard } from '../../guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -38,7 +36,7 @@ export class IllustrationsController {
         )
         file: Express.Multer.File,
     ) {
-        return this.illustrationsService.create(createIllustrationDto);
+        return this.illustrationsService.create(createIllustrationDto, file);
     }
 
     @Get()
@@ -49,15 +47,6 @@ export class IllustrationsController {
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.illustrationsService.findOne(id);
-    }
-
-    @UseGuards(AuthGuard)
-    @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() updateIllustrationDto: UpdateIllustrationDto,
-    ) {
-        return this.illustrationsService.update(id, updateIllustrationDto);
     }
 
     @UseGuards(AuthGuard)

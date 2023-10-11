@@ -3,8 +3,6 @@ import { ObjectId } from 'mongodb';
 
 export class CreateIllustrationDto {
 
-    file: File;
-
     @IsString()
     @Length(24)
     @IsOptional()
