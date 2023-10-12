@@ -19,6 +19,9 @@ export class Illustration {
     filepath: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    owner: User;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Article' })
