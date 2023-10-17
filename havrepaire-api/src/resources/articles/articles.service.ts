@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +8,8 @@ import { ObjectId } from 'mongodb';
 import { User } from '../users/schemas/user.schema';
 import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
+import { State } from './enums/state.enum';
+import { Category } from './enums/category.enum';
 
 @Injectable()
 export class ArticlesService {
@@ -24,6 +26,7 @@ export class ArticlesService {
 
     async create(createArticleDto: CreateArticleDto): Promise<Article> {
         try {
+            if (!createArticleDto.state) createArticleDto.state = State.DRAFT;
             const article = new this.articleModel(createArticleDto);
             const createdArticle = await article.save();
             return createdArticle;
@@ -44,13 +47,16 @@ export class ArticlesService {
     }
 
     findOne(id: string | ObjectId) {
+        if (id.toString().length !== 24) {
+            throw new NotAcceptableException(`You must enter a 24 characters identifier in the URI to load an article`);
+        }
         try {
             return this.articleModel
                 .findById(new ObjectId(id))
                 .populate('illustration', 'comments')
                 .exec();
         } catch (e) {
-            throw new Error(`Oups, article could not be found: ${e}`);
+            throw new NotFoundException(`Oups, article with id ${id} could not be found.`);
         }
     }
 

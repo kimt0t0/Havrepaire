@@ -32,6 +32,7 @@ export class CreateArticleDto {
     state?: State;
 
     @IsString()
+    @IsOptional()
     @Length(24)
     illustration?: Illustration;
 }

@@ -18,19 +18,19 @@ export class Article {
     @Prop({ length: 120, nullable: false })
     titleFr: string;
 
-    @Prop({ length: 120, nullable: false })
+    @Prop({ length: 120 })
     titleEn: string;
 
     @Prop({ length: 1200, nullable: false })
     parapraphFr: string;
 
-    @Prop({ length: 1200, nullable: false })
+    @Prop({ length: 1200 })
     parapraphEn: string;
 
     @Prop()
     categories: Category[];
 
-    @Prop()
+    @Prop({ nullable: false })
     state: State;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' })

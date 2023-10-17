@@ -83,7 +83,7 @@ export class UsersService {
                 .select('-hash')
                 .select('-email')
                 .select('-id')
-                .populate('avatar', 'comments')
+                .populate('comments', 'likes')
                 .exec();
         } catch (e) {
             throw new Error(`Oups, users could not be loaded: ${e}`);
@@ -97,7 +97,7 @@ export class UsersService {
                 .select('-hash')
                 .select('-email')
                 .select('-id')
-                .populate('avatar', 'comments')
+                .populate('comments', 'likes')
                 .exec();
             if (!user)
                 throw new NotFoundException(
@@ -168,19 +168,8 @@ export class UsersService {
                 .select('-hash')
                 .select('-email')
                 .select('-id')
-                .populate('avatar', 'comments')
+                .populate('comments', 'likes')
                 .exec();
-            // delete user's avatar
-            try {
-                deletedUser.avatar &&
-                    (await this.illustrationModel
-                        .findByIdAndDelete(new ObjectId(deletedUser.avatar._id))
-                        .exec());
-            } catch (e) {
-                throw new Error(
-                    `Illustration could not be deleted during user deletion: ${e}`,
-                );
-            }
             // delete comments
             try {
                 if (deletedUser.comments) {

@@ -33,9 +33,6 @@ export class User {
     @Prop({ default: Role.GHOST })
     role: Role;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Illustration' })
-    avatar: Illustration;
-
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })
     likes: Like[];
 

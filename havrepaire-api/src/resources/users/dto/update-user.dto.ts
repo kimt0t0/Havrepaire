@@ -34,10 +34,6 @@ export class UpdateUserDto {
     @IsOptional()
     pronouns?: string;
 
-    @IsUUID()
-    @IsOptional()
-    avatar?: Illustration;
-
     @IsArray()
     @IsOptional()
     likes?: Like[];

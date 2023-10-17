@@ -25,7 +25,7 @@ import { diskStorage } from 'multer';
                     filename: (req, file, cb) => {
                         const uniquePrefix = Date.now() + '_' + Math.round(Math.random() * 1E4);
                         cb(null, uniquePrefix + file.originalname);
-                    }
+                    },
                 })
                 // dest: './files',
             }),
