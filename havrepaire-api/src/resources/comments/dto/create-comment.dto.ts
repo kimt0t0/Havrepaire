@@ -13,9 +13,5 @@ export class CreateCommentDto {
 
     @IsString()
     @Length(24)
-    authorId: string | ObjectId;
-
-    @IsString()
-    @Length(24)
     articleId: string | ObjectId;
 }

@@ -30,7 +30,7 @@ export class User {
     @Prop({ length: 80, nullable: true })
     pronouns: string;
 
-    @Prop({ default: Role.GHOST })
+    @Prop({ default: Role.VIEWER })
     role: Role;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }] })

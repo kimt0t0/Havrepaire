@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,20 +24,18 @@ export class CommentsService {
     ) { }
 
     async create(createCommentDto: CreateCommentDto) {
-        const { text, languages, authorId, articleId } = createCommentDto;
+        const { text, languages, articleId } = createCommentDto;
         try {
-            // get author
-            const author = await this.userModel
-                .findById(
-                    new ObjectId(authorId),
-                )
+            // get author from request
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const authorId = decodedToken._id;
+            const author = await this.userModel.findById(new ObjectId(authorId))
                 .select('-hash')
                 .select('-email')
-                .select('-id');
-            if (!author)
-                throw new Error(
-                    `Oups, user with id ${authorId} could not be found on comment creation...`,
-                );
+                .select('-id');;
+            if (!author) throw new NotAcceptableException(`User with id ${authorId} does not exist. Cannot add like.`);
             // get article
             const article = await this.articleModel.findById(
                 new ObjectId(articleId),
@@ -53,13 +51,13 @@ export class CommentsService {
                 article,
             });
             const createdComment = await comment.save();
+            console.log(`----- Comment: ${JSON.stringify(createdComment)}`);
             // add to user
             try {
-                createCommentDto.authorId &&
-                    (await this.userModel.findByIdAndUpdate(
-                        new ObjectId(createCommentDto.authorId),
-                        { $push: { comments: createdComment } },
-                    ));
+                await this.userModel.findByIdAndUpdate(
+                    new ObjectId(authorId),
+                    { $push: { comments: createdComment } },
+                );
             } catch (e) {
                 throw new Error(
                     `User could not be updated during comment creation: ${e}`,
@@ -67,11 +65,10 @@ export class CommentsService {
             }
             // add to article
             try {
-                createCommentDto.articleId &&
-                    (await this.articleModel.findByIdAndUpdate(
-                        new ObjectId(createCommentDto.articleId),
-                        { $push: { comments: createdComment } },
-                    ));
+                await this.articleModel.findByIdAndUpdate(
+                    new ObjectId(createCommentDto.articleId),
+                    { $push: { comments: createdComment } },
+                );
             } catch (e) {
                 throw new Error(
                     `User could not be updated during comment creation: ${e}`,
@@ -97,7 +94,11 @@ export class CommentsService {
 
     findOne(id: string | ObjectId) {
         try {
-            return this.commentModel.findById(new ObjectId(id)).populate('artice').exec();
+            // check article id's format
+            if (typeof id !== 'string' || id.length !== 24) {
+                throw new NotAcceptableException('Article\'s id must be a 24 alphanumeric slug.');
+            }
+            return this.commentModel.findById(new ObjectId(id)).populate('author', 'article').exec();
         } catch (e) {
             throw new Error(
                 `Oups, comment with id ${id} could not be found: ${e}`,
@@ -116,6 +117,7 @@ export class CommentsService {
                 .findById(
                     new ObjectId(decodedToken._id)
                 )
+                .populate('role')
                 .select('-hash')
                 .select('-email')
                 .select('-id');
@@ -140,12 +142,15 @@ export class CommentsService {
     async remove(id: string | ObjectId) {
         try {
             // check if authenticated user is comment's author
-            const comment: Comment = await this.commentModel.findById(new ObjectId(id)).populate('author');
             const request = this.request;
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
             const decodedToken = decodeToken(token);
-            const userToken = await this.userModel.findById(new ObjectId(decodedToken._id));
-            if (decodedToken._id !== comment.author._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
+            const authorId = decodedToken._id;
+            const authenticatedUser = await this.userModel.findById(new ObjectId(authorId))
+                .select('-hash')
+                .select('-email')
+                .select('-id');
+            if (decodedToken._id !== authenticatedUser._id.toString() && authenticatedUser.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
             // delete comment
             const deletedComment = await this.commentModel
                 .findByIdAndDelete(new ObjectId(id))
@@ -153,6 +158,7 @@ export class CommentsService {
                 .exec();
             // update user
             try {
+                // ICI ce serait le morceau supprimé qui a déclenché le bug
                 await this.userModel
                     .findById(deletedComment.author)
                     .select('-hash')
@@ -173,7 +179,7 @@ export class CommentsService {
                 deletedComment.article &&
                     (await this.articleModel.findByIdAndUpdate(
                         deletedComment.article._id,
-                        { $pull: { comments: deletedComment._id } },
+                        { $pull: { comments: deletedComment } },
                     ));
             } catch (e) {
                 throw new Error(

@@ -13,6 +13,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
+import { RemoveUserDto } from './dto/remove-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -46,7 +47,10 @@ export class UsersController {
 
     @UseGuards(AuthGuard)
     @Delete(':id')
-    remove(@Param('id') id: string): Promise<User> {
-        return this.usersService.remove(id);
+    remove(
+        @Param('id') id: string,
+        @Body() removeUserDto: RemoveUserDto,
+    ): Promise<User> {
+        return this.usersService.remove(id, removeUserDto);
     }
 }

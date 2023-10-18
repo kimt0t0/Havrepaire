@@ -21,14 +21,12 @@ export class IllustrationsService {
             const articleId = new ObjectId(createIllustrationDto.articleId);
             //check if article exists if article already has illustration, delete former illustration
             if (articleId) {
-                console.log(articleId.toString());
                 try {
                     const article: Article =
                         await this.articleModel
                             .findById(articleId)
                             .populate('illustration')
                             .exec();
-                    console.log(JSON.stringify(article));
                     if (article.illustration) await this.remove(new ObjectId(article.illustration._id));
                 } catch (e) {
                     throw new Error(

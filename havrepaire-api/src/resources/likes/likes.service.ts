@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { decodeToken } from 'src/utils/token.utils';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -6,10 +8,12 @@ import { Like } from './schemas/like.schema';
 import { Article } from '../articles/schemas/article.schema';
 import { User } from '../users/schemas/user.schema';
 import { ObjectId } from 'mongodb';
+import { Role } from '../users/enums/role.enum';
 
 @Injectable()
 export class LikesService {
     constructor(
+        @Inject(REQUEST) private request,
         @InjectModel(Like.name)
         private likeModel: Model<Like>,
         @InjectModel(Article.name)
@@ -19,18 +23,31 @@ export class LikesService {
     ) { }
 
     async create(createLikeDto: CreateLikeDto) {
-        const { articleId, authorId } = createLikeDto;
+        const { articleId } = createLikeDto;
+        if (typeof articleId !== 'string' && articleId.toString().length !== 24) throw new NotAcceptableException(`Article id must be a 24 alphanumerical identifier.`);
         try {
+            // get user id from token and check if exists
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const authorId = decodedToken._id;
+            const checkedAuthor = await this.userModel.findById(new ObjectId(authorId))
+                .select('-hash')
+                .select('-email')
+                .select('-id');;
+            if (!checkedAuthor) throw new NotAcceptableException(`User with id ${authorId} does not exist. Cannot add like.`);
             // check if like already exists from user on article
             // if like exists remove it:
             const targetedArticle = await this.articleModel
                 .findById(new ObjectId(articleId))
                 .populate('likes');
-            for (let like of targetedArticle.likes) {
-                if (like.author._id.toString() === authorId) {
-                    const existingLike = like;
-                    this.remove(existingLike._id);
-                    return null;
+            if (targetedArticle.likes) {
+                for (let like of targetedArticle.likes) {
+                    if (like.author._id.toString() === authorId) {
+                        const existingLike = like;
+                        this.remove(existingLike._id);
+                        return null;
+                    }
                 }
             }
             // else create new like:
@@ -38,7 +55,7 @@ export class LikesService {
                 new ObjectId(articleId),
             );
             if (!article)
-                throw new Error(
+                throw new NotFoundException(
                     `Oups, article with id ${articleId} could not be found on like creation...`,
                 );
             const author = await this.userModel
@@ -57,11 +74,13 @@ export class LikesService {
                 article,
             });
             const createdLike = await newLike.save();
+            console.log(`----- Like: ${JSON.stringify(createdLike)}`)
             // add to user:
             try {
-                await this.userModel.findByIdAndUpdate(new ObjectId(authorId), {
-                    $push: { likes: createdLike },
-                });
+                await this.userModel.findByIdAndUpdate(
+                    new ObjectId(authorId),
+                    { $push: { likes: createdLike } },
+                );
             } catch (e) {
                 throw new Error(
                     `User could not be updated during like creation: ${e}`,
@@ -81,7 +100,7 @@ export class LikesService {
             // return created like:
             return createdLike;
         } catch (e) {
-            throw new Error(`Oups, like could not be created: ${e}`);
+            throw new BadRequestException(`Oups, like could not be created !`);
         }
     }
 
@@ -105,22 +124,29 @@ export class LikesService {
 
     async remove(id: string | ObjectId) {
         try {
+            // get user id from token and check if exists
+            const request = this.request;
+            const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
+            const decodedToken = decodeToken(token);
+            const authorId = decodedToken._id;
+            const authenticatedUser = await this.userModel.findById(new ObjectId(authorId))
+                .select('-hash')
+                .select('-email')
+                .select('-id');
+            // check if user exists and is like author or admin
+            if (!authenticatedUser) throw new NotAcceptableException(`User with id ${authorId} does not exist. Cannot add like.`);
+            if (decodedToken._id !== authenticatedUser._id.toString() && authenticatedUser.role !== Role.ADMIN) throw new UnauthorizedException(`User must be authenticated and must be admin or comment's author to modify it.`);
+            // delete like
             const deletedLike = await this.likeModel
                 .findByIdAndDelete(new ObjectId(id))
                 .populate('author', 'article')
                 .exec();
             // update user
             try {
-                await this.userModel
-                    .findById(deletedLike.author)
-                    .select('-hash')
-                    .select('-email')
-                    .select('-id');
-                deletedLike.author &&
-                    (await this.userModel.findByIdAndUpdate(
-                        deletedLike.author._id,
-                        { $pull: { likes: deletedLike._id } },
-                    ));
+                await this.userModel.findByIdAndUpdate(
+                    deletedLike.author._id,
+                    { $pull: { likes: deletedLike._id } },
+                );
             } catch (e) {
                 throw new Error(
                     `Like with id ${id} could not be removed from user with id ${deletedLike.author} during like deletion: ${e}`,
@@ -128,11 +154,10 @@ export class LikesService {
             }
             // update article
             try {
-                deletedLike.article &&
-                    (await this.articleModel.findByIdAndUpdate(
-                        deletedLike.article._id,
-                        { $pull: { likes: deletedLike._id } },
-                    ));
+                await this.articleModel.findByIdAndUpdate(
+                    deletedLike.article._id,
+                    { $pull: { likes: deletedLike._id } },
+                );
             } catch (e) {
                 throw new Error(
                     `Like could not be removed from article with id ${deletedLike.article._id} during like deletion: ${e}`,

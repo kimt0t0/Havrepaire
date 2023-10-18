@@ -5,23 +5,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Article } from './schemas/article.schema';
 import { ObjectId } from 'mongodb';
-import { User } from '../users/schemas/user.schema';
 import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
+import { Illustration } from '../illustrations/schemas/illustration.schema';
 import { State } from './enums/state.enum';
-import { Category } from './enums/category.enum';
+const fs = require('fs');
 
 @Injectable()
 export class ArticlesService {
     constructor(
         @InjectModel(Article.name)
         private articleModel: Model<Article>,
-        @InjectModel(User.name)
-        private userModel: Model<User>,
         @InjectModel(Comment.name)
         private commentModel: Model<Comment>,
         @InjectModel(Like.name)
         private likeModel: Model<Like>,
+        @InjectModel(Illustration.name)
+        private illustrationModel: Model<Illustration>,
     ) { }
 
     async create(createArticleDto: CreateArticleDto): Promise<Article> {
@@ -92,23 +92,11 @@ export class ArticlesService {
                             throw new Error(
                                 `Comment with id ${comment._id} was not found`,
                             );
-                        try {
-                            await this.userModel
-                                .findByIdAndUpdate(deletedComment.author._id, {
-                                    $pull: { comments: deletedComment._id },
-                                })
-                                .populate('comments')
-                                .exec();
-                        } catch (e) {
-                            throw new Error(
-                                `Oups, comment with id ${comment._id}could not be removed from user with id ${deletedComment.author._id}:${e}`,
-                            );
-                        }
                     }
                 }
             } catch (e) {
                 throw new Error(
-                    `Oups, user's comments could not be deleted: ${e}`,
+                    `Oups, article's comments could not be deleted: ${e}`,
                 );
             }
             // delete likes
@@ -123,23 +111,22 @@ export class ArticlesService {
                             throw new Error(
                                 `Like with id ${like._id} was not found`,
                             );
-                        try {
-                            await this.userModel
-                                .findByIdAndUpdate(deletedLike.author._id, {
-                                    $pull: { likes: deletedLike._id },
-                                })
-                                .populate('likes')
-                                .exec();
-                        } catch (e) {
-                            throw new Error(
-                                `Oups, like with id ${like._id}could not be removed from user with id ${deletedLike.author._id}:${e}`,
-                            );
-                        }
                     }
                 }
             } catch (e) {
                 throw new Error(
-                    `Oups, user's likes could not be deleted: ${e}`,
+                    `Oups, article's likes could not be deleted: ${e}`,
+                );
+            }
+            // delete illustration
+            try {
+                if (deletedArticle.illustration) {
+                    const deletedIllustration = await this.illustrationModel.findByIdAndDelete(deletedArticle.illustration._id).exec();
+                    fs.unlinkSync(deletedIllustration.filepath);
+                }
+            } catch (e) {
+                throw new Error(
+                    `Oups, article's illustration could not be deleted: ${e}`,
                 );
             }
             return deletedArticle;

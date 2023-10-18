@@ -1,9 +1,8 @@
 import { ObjectId } from 'mongodb';
-import { Illustration } from 'src/resources/illustrations/schemas/illustration.schema';
 import { Comment } from 'src/resources/comments/schemas/comment.schema';
 import { Like } from 'src/resources/likes/schemas/like.schema';
 import { Gender } from '../enums/gender.enum';
-import { IsArray, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword, IsUUID, Length } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
 
 export class UpdateUserDto {
     @IsString()

@@ -15,12 +15,12 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
-import { Illustration } from '../illustrations/schemas/illustration.schema';
 import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
 import { Article } from '../articles/schemas/article.schema';
 import { decodeToken } from 'src/utils/token.utils';
 import { Role } from './enums/role.enum';
+import { RemoveUserDto } from './dto/remove-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,8 +30,6 @@ export class UsersService {
         private userModel: Model<User>,
         @InjectModel(Article.name)
         private articleModel: Model<Article>,
-        @InjectModel(Illustration.name)
-        private illustrationModel: Model<Illustration>,
         @InjectModel(Comment.name)
         private commentModel: Model<Comment>,
         @InjectModel(Like.name)
@@ -39,7 +37,6 @@ export class UsersService {
     ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
-        if (createUserDto.role === Role.ADMIN) throw new NotAcceptableException(`You cannot create an admin account. If you need one please contact the developer.`);
         try {
             const {
                 username,
@@ -49,6 +46,7 @@ export class UsersService {
                 pronouns,
                 role
             } = createUserDto;
+            if (role === Role.ADMIN) throw new NotAcceptableException(`You cannot create an admin account. If you need one please contact the developer.`);
             const hash = await bcrypt.hash(password, 15);
             // const maskedEmail = maskEmail2(email);
             // masking email caused index mistaken errors in db
@@ -83,7 +81,7 @@ export class UsersService {
                 .select('-hash')
                 .select('-email')
                 .select('-id')
-                .populate('comments', 'likes')
+                .populate('likes', 'comments')
                 .exec();
         } catch (e) {
             throw new Error(`Oups, users could not be loaded: ${e}`);
@@ -114,23 +112,20 @@ export class UsersService {
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
         try {
-            // check if authenticated user is user themselves
-            const user: User = await this.userModel
-                .findById(new ObjectId(id))
-                .select('-hash')
-                .select('-email')
-                .select('-id');
+            // check authenticated user
             const request = this.request;
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
             const decodedToken = decodeToken(token);
-            const userToken = await this.userModel
+            const authenticatedUser = await this.userModel
                 .findById(
                     new ObjectId(decodedToken._id)
                 )
-                .select('-hash')
+                .populate('role')
                 .select('-email');
-            if (decodedToken._id !== user._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be the user themselves authenticated of with admin role to update this user.`);
-            if (userToken.role !== Role.ADMIN) throw new UnauthorizedException(`Classic users must enter their password to update their data`);
+            if (authenticatedUser.role !== Role.ADMIN && authenticatedUser._id.toString() !== id) throw new UnauthorizedException('A user account can be updated only by its owner or an admin account.');
+            // check password
+            const isPasswordMatch = await bcrypt.compare(updateUserDto.password, authenticatedUser.hash);
+            if (!isPasswordMatch) throw new NotAcceptableException('User password does not match');
             // update user
             await this.userModel
                 .findByIdAndUpdate(new ObjectId(id), updateUserDto)
@@ -143,25 +138,29 @@ export class UsersService {
                 .exec();
             return updatedUser;
         } catch (e) {
-            throw new Error(`Oups, user could not be updated: ${e}`);
+            throw new Error(`Oups, user with id ${id} could not be updated: ${e}`);
         }
     }
 
-    async remove(id: string | ObjectId): Promise<User> {
+    async remove(id: string | ObjectId, removeUserDto: RemoveUserDto): Promise<User> {
+        const {
+            userEmail,
+            userPassword
+        } = removeUserDto;
+        if (!userEmail) throw new NotAcceptableException(`User must enter their email address to delete their account.`);
+        if (!userPassword) throw new NotAcceptableException(`User must enter their password to delete their account`);
         try {
-            // check if authenticated user is user themselves
-            const user: User = await this.userModel.findById(new ObjectId(id));
+            // check if authenticated user is an admin or user themselves
             const request = this.request;
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');
             const decodedToken = decodeToken(token);
-            const userToken = await this.userModel
-                .findById(
-                    new ObjectId(decodedToken._id)
-                )
-                .select('-hash')
-                .select('-email');
-            if (decodedToken._id !== user._id.toString() && userToken.role !== Role.ADMIN) throw new UnauthorizedException(`User must be the user themselves authenticated of with admin role to delete this user.`);
-            if (userToken.role !== Role.ADMIN) throw new UnauthorizedException(`Classic users must enter their password to delete their data`);
+            const authenticatedUser: User = await this.userModel.findById(new ObjectId(decodedToken._id)).populate('role').exec();
+            if (authenticatedUser.role !== Role.ADMIN && decodedToken._id !== id) throw new UnauthorizedException('You are not allowed to remove this account. An account can be removed only by its owner or an admin account.');
+            // check credentials...
+            const isPasswordMatch = await bcrypt.compare(userPassword, authenticatedUser.hash);
+            if (!isPasswordMatch) throw new NotAcceptableException('User password does not match');
+            const isEmailMatch = (userEmail === authenticatedUser.email);
+            if (!isEmailMatch) throw new NotAcceptableException('User email does not match');
             // delete user
             const deletedUser = await this.userModel
                 .findByIdAndDelete(new ObjectId(id))
