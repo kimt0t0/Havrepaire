@@ -51,7 +51,6 @@ export class CommentsService {
                 article,
             });
             const createdComment = await comment.save();
-            console.log(`----- Comment: ${JSON.stringify(createdComment)}`);
             // add to user
             try {
                 await this.userModel.findByIdAndUpdate(

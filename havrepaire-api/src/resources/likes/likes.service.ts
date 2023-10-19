@@ -74,7 +74,6 @@ export class LikesService {
                 article,
             });
             const createdLike = await newLike.save();
-            console.log(`----- Like: ${JSON.stringify(createdLike)}`)
             // add to user:
             try {
                 await this.userModel.findByIdAndUpdate(
@@ -143,7 +142,7 @@ export class LikesService {
                 .exec();
             // update user
             try {
-                await this.userModel.findByIdAndUpdate(
+                const updatedUser: User = await this.userModel.findByIdAndUpdate(
                     deletedLike.author._id,
                     { $pull: { likes: deletedLike._id } },
                 );

@@ -9,6 +9,7 @@ import { Comment } from '../comments/schemas/comment.schema';
 import { Like } from '../likes/schemas/like.schema';
 import { Illustration } from '../illustrations/schemas/illustration.schema';
 import { State } from './enums/state.enum';
+import { User } from '../users/schemas/user.schema';
 const fs = require('fs');
 
 @Injectable()
@@ -22,6 +23,8 @@ export class ArticlesService {
         private likeModel: Model<Like>,
         @InjectModel(Illustration.name)
         private illustrationModel: Model<Illustration>,
+        @InjectModel(User.name)
+        private userModel: Model<User>,
     ) { }
 
     async create(createArticleDto: CreateArticleDto): Promise<Article> {
@@ -92,6 +95,9 @@ export class ArticlesService {
                             throw new Error(
                                 `Comment with id ${comment._id} was not found`,
                             );
+                        // update user
+                        const updatedUser = await this.userModel.findByIdAndUpdate(deletedComment.author._id, { $pull: { comments: deletedComment._id } }).select('-email').select('-hash').exec();
+                        if (!updatedUser) throw new NotFoundException(`User with id ${deletedComment.author._id} was not found.`);
                     }
                 }
             } catch (e) {
@@ -103,14 +109,18 @@ export class ArticlesService {
             try {
                 if (deletedArticle.likes) {
                     for (const like of deletedArticle.likes) {
+                        // delete like
                         const deletedLike = await this.likeModel
                             .findByIdAndDelete(like._id)
                             .populate('author')
                             .exec();
                         if (!deletedLike)
-                            throw new Error(
-                                `Like with id ${like._id} was not found`,
+                            throw new NotFoundException(
+                                `Like with id ${like._id} was not found.`,
                             );
+                        // update user
+                        const updatedUser = await this.userModel.findByIdAndUpdate(deletedLike.author._id, { $pull: { likes: deletedLike._id } }).select('-email').select('-hash').exec();
+                        if (!updatedUser) throw new NotFoundException(`User with id ${deletedLike.author._id} was not found.`);
                     }
                 }
             } catch (e) {
