@@ -1,0 +1,6 @@
+// Color palettes
+@function color($hsl, $amount: 50) {
+  $change-color: hsl(hue($hsl), saturation($hsl), calc(lightness($hsl) 
+* $amount / 50));
+  @return $change-color;
+}

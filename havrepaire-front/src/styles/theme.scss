@@ -1,3 +1,28 @@
+@import './abstracts/fonts';
+@import './abstracts/variables';
+@import './abstracts/mixins';
+@import './abstracts/functions';
+
 body {
-    background-color: rgba(30, 200, 200, 0.15);
+    margin: 0;
+    padding: 0;
+    position: relative; 
+    background-color: color($light, 50);
+    font-family: Lexend, Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: color($dark, 50);
+    scrollbar-width: thin;
+    scrollbar-color: color($primary, 50);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Raleway, Lexend, Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    margin: $space-xl 0 $space-s;
+}
+
+.classic-container {
+    max-width: $classic-container;
+    margin: 0 auto;
 }
