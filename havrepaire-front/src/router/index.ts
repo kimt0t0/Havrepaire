@@ -53,6 +53,28 @@ const router = createRouter({
                     component: () => import('../views/NewContents/CreateIllustrationView.vue')
                 }
             ]
+        },
+        {
+            path: '/lecteurices',
+            name: 'users-list',
+            component: () => import('../views/Users/UsersListView.vue'),
+            children: [
+                {
+                    path: ':id',
+                    name: 'user-details',
+                    component: () => import('../views/Users/UserDetailsView.vue')
+                }
+            ]
+        },
+        {
+            path: '/contact',
+            name: 'contact',
+            component: () => import('../views/ContactView.vue')
+        },
+        {
+            path: '/donner',
+            name: 'donate',
+            component: () => import('../views/DonateView.vue')
         }
     ]
 });

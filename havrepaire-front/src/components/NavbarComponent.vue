@@ -27,6 +27,10 @@ const navlinks = [
     {
         name: 'Nouveau contenu',
         path: '/nouveau-contenu',
+    },
+    {
+        name: 'Les Lecteurices',
+        path: '/lecteurices'
     }
 
 ]
