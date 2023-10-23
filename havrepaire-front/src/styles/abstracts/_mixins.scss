@@ -41,3 +41,14 @@
         }
     }
 }
+
+// Highlight text
+@mixin highlight($color: color($primary, 55)) {
+    padding: $space-xxs $space-m $space-xxs $space-xs;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    border-radius: $radius-xs;
+    background-color: $color;
+}

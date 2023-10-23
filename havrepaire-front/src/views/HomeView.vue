@@ -6,6 +6,7 @@ import { ButtonTypes } from '@/enums/button-types.enum';
 import { FlexPositions } from '@/enums/flex-positions.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
+import HeroTitleParticle from '@/particles/HeroTitleParticle.vue';
 
 </script>
 
@@ -29,5 +30,9 @@ import { LinkTypes } from '@/enums/link-types.enum';
         <ButtonParticle :state="ButtonStates.DA" :size="ButtonSizes.BIG">Gros bouton désactivé</ButtonParticle>
         <ButtonParticle :state="ButtonStates.DA" :style="ButtonStyles.AD" :size="ButtonSizes.BIG">G.B.D. admin
         </ButtonParticle>
+        <h3>Titres réutilisables</h3>
+        <HeroTitleParticle normalText="Titre avec surlignage" highlightedText="classique" />
+        <HeroTitleParticle normalText="Titre avec surlignage" highlightedText="spécial" highlightColor="admin" />
+        <HeroTitleParticle normalText="Titre avec surlignage" highlightedText="succès" highlightColor="success" />
     </main>
 </template>
