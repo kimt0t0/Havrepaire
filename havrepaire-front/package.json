@@ -15,6 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "mongodb": "^6.2.0",
     "pinia": "^2.1.6",
     "sass": "^1.69.4",
     "vue": "^3.3.4",

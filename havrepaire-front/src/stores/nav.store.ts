@@ -1,4 +1,4 @@
-import type { Navlink } from "@/interfaces/navlink.interface";
+import type { Navlink } from "@/interfaces/Navlink.interface";
 import { defineStore } from "pinia";
 
 export const useNavStore = defineStore('navigation', () => {
