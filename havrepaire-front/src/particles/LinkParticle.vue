@@ -7,7 +7,8 @@ defineProps<{
     title: string;
     style: LinkStyles;
     type: LinkTypes;
-    admin?: boolean
+    admin?: boolean;
+    blankTarget?: boolean;
 }>();
 
 </script>
@@ -20,7 +21,8 @@ defineProps<{
     </RouterLink>
     <!-- classic link -->
     <a v-if="type === LinkTypes.CL" :to="path" :title="title"
-        :class="(style === LinkStyles.LINK ? 'classic-link' : 'button-link') + (admin ? ' __admin' : '')">
+        :class="(style === LinkStyles.LINK ? 'classic-link' : 'button-link') + (admin ? ' __admin' : '')"
+        :target="blankTarget ? '_blank' : ''">
         {{ title }}
     </a>
 </template>

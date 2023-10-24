@@ -41,6 +41,10 @@ const toggleShowLanguageDropdown = (): void => {
         border: 1px solid color($light, 50);
         border-radius: $radius-xxs;
     }
+
+    @media (max-width: $bp-xs) {
+        margin: $space-s 0;
+    }
 }
 
 .ld-button {
@@ -49,6 +53,7 @@ const toggleShowLanguageDropdown = (): void => {
     display: flex;
     align-items: center;
     border-radius: initial;
+    background-color: color($light, 50);
 }
 
 .lm-contents {

@@ -18,8 +18,8 @@ import Navbar from './NavbarComponent.vue';
 @use '@/styles/theme.scss' as *;
 
 .header {
-    height: 85px;
     box-shadow: 0 0 5px color($dark, 50);
+    padding: $space-m;
 }
 
 .main-title {
@@ -29,6 +29,10 @@ import Navbar from './NavbarComponent.vue';
     margin: 0;
     display: flex;
     align-items: center;
+
+    @media (max-width: 240px) {
+        font-size: $txt-m;
+    }
 }
 
 .header-container {
@@ -37,10 +41,22 @@ import Navbar from './NavbarComponent.vue';
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+
+    @media (max-width: $bp-m) {
+        flex-direction: column;
+        align-items: center;
+    }
+
 }
 
 .header-logo {
     width: $txt-xxl;
     height: $txt-xxl;
+
+    @media (max-width: $bp-m) {
+        margin-bottom: $space-m;
+    }
+
 }
 </style>
