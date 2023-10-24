@@ -20,10 +20,10 @@ import { LinkTypes } from '@/enums/link-types.enum';
             :position="FlexPositions.CE" />
         <!-- Not registered - French -->
         <LinkParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" path="/inscription"
-            title="Pas encore inscrit·e ?" :style="LinkStyles.LINK" :type="LinkTypes.RL" :admin="false" />
+            title="Pas encore inscrit·e ?" :style="LinkStyles.LINK" :type="LinkTypes.RL" :admin="true" />
         <!-- Not registered - English -->
         <LinkParticle v-else path="/inscription" title="Not registered yet ?" :style="LinkStyles.LINK" :type="LinkTypes.RL"
-            :admin="false" />
+            :admin="true" />
         <!-- Form -->
         <LoginForm />
     </div>
