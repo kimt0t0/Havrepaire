@@ -54,6 +54,13 @@ const toggleShowLanguageDropdown = (): void => {
     align-items: center;
     border-radius: initial;
     background-color: color($light, 50);
+    text-transform: capitalize;
+
+    >.fi {
+        border: 1px solid color($light, 50);
+        border-radius: $radius-xxs;
+        margin-right: $space-xs;
+    }
 }
 
 .lm-contents {

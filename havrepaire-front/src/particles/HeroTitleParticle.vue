@@ -4,7 +4,7 @@ import { FlexPositions } from '@/enums/flex-positions.enum';
 defineProps<{
     normalText?: string;
     highlightedText?: string;
-    highlightColor?: string;
+    highlightColor?: string; // if not default choose 'admin' or 'success'
     position?: FlexPositions;
 }>();
 </script>
