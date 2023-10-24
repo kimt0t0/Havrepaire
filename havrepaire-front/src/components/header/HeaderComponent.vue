@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Navbar from './NavbarComponent.vue';
-import LanguageMenu from './LanguageMenuComponent.vue';
 </script>
 
 <template>
@@ -10,7 +9,7 @@ import LanguageMenu from './LanguageMenuComponent.vue';
                 Le &nbsp;<img alt="Logo du Havrepaire" class="header-logo" src="@/assets/logo.svg" />avrepaire
             </h1>
             <Navbar />
-            <LanguageMenu />
+
         </div>
     </header>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import LanguageMenu from './LanguageMenuComponent.vue';
+import LinkParticle from '@/particles/LinkParticle.vue';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
-import LinkParticle from '@/particles/LinkParticle.vue';
 import { useAuthStore } from '@/stores/auth.store';
 
 const navlinks = [
@@ -19,10 +20,12 @@ const navlinks = [
 
 <template>
     <div class="navbar">
+        <LanguageMenu />
         <LinkParticle v-for="(navlink, index) of navlinks" :key="index" :path="navlink.path" :title="navlink.name"
-            :style="LinkStyles.BUTTON" :type="LinkTypes.CL" :admin="false" />
+            :style="LinkStyles.BUTTON" :type="LinkTypes.RL" :admin="false" />
         <ButtonParticle v-if="useAuthStore().activeUserToken">Me déconnecter</ButtonParticle>
-        <LinkParticle v-else />
+        <LinkParticle v-else path="/connexion" title="Connexion" :style="LinkStyles.BUTTON" :type="LinkTypes.RL"
+            :admin="true" />
     </div>
 </template>
 

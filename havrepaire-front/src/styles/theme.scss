@@ -12,8 +12,7 @@ body {
     font-weight: 400;
     font-size: 18px;
     color: color($dark, 50);
-    scrollbar-width: thin;
-    scrollbar-color: color($primary, 50);
+    overflow-y: scroll;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -14,7 +14,7 @@
     font-size: $txt-s;
     @include transition;
 
-    &:hover {
+    &:hover, &.__active {
         color: color($light, 50);
         background-color: $color;
     }
