@@ -19,7 +19,7 @@ import { Languages } from '@/enums/languages.enum';
                 <LinkParticle path="/contact" title="Me contacter" :style="LinkStyles.BUTTON" :type="LinkTypes.RL"
                     :admin="true" />
                 <LinkParticle path="https://ko-fi.com/kimrobert" title="Faire un don" :style="LinkStyles.BUTTON"
-                    :type="LinkTypes.RL" :admin="true" :blankTarget="true" />
+                    :type="LinkTypes.CL" :admin="true" :blankTarget="true" />
             </div>
         </div>
         <!-- English contents -->
@@ -52,6 +52,11 @@ footer {
     height: fit-content;
     padding: $space-m 0;
     margin-top: $space-xxl;
+
+    @media (max-width: $bp-m) {
+        margin-top: $space-m;
+    }
+
 }
 
 .footer-container {

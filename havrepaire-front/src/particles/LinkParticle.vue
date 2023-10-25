@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FlexPositions } from '@/enums/flex-positions.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
 
@@ -7,6 +8,7 @@ defineProps<{
     title: string;
     style: LinkStyles;
     type: LinkTypes;
+    position?: FlexPositions;
     admin?: boolean;
     blankTarget?: boolean;
 }>();
@@ -16,11 +18,11 @@ defineProps<{
 <template>
     <!-- routerlink -->
     <RouterLink v-if="type === LinkTypes.RL" :to="path"
-        :class="(style === LinkStyles.LINK ? 'classic-link' : 'button-link') + (admin ? ' __admin' : '')">
+        :class="(style === LinkStyles.LINK ? 'classic-link' : 'button-link') + (position ? ' __position-' + position : '') + (admin ? ' __admin' : '')">
         {{ title }}
     </RouterLink>
     <!-- classic link -->
-    <a v-if="type === LinkTypes.CL" :to="path" :title="title"
+    <a v-if="type === LinkTypes.CL" :href="path" :title="title"
         :class="(style === LinkStyles.LINK ? 'classic-link' : 'button-link') + (admin ? ' __admin' : '')"
         :target="blankTarget ? '_blank' : ''">
         {{ title }}
@@ -54,5 +56,10 @@ defineProps<{
     &.__admin {
         @include button($color: color($secondary, 50));
     }
+
+    &.__position-centered {
+        text-align: center;
+    }
+
 }
 </style>

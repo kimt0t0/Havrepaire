@@ -21,6 +21,10 @@ import Navbar from './NavbarComponent.vue';
     box-shadow: 0 0 5px color($dark, 50);
     padding: $space-m;
     margin-bottom: $space-xxl;
+
+    @media (max-width: $bp-m) {
+        margin-bottom: $space-m;
+    }
 }
 
 .main-title {

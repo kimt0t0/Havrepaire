@@ -36,6 +36,7 @@ const toggleShowLanguageDropdown = (): void => {
 
 .language-button {
     @include button;
+    margin-right: $space-m;
 
     >.fi {
         border: 1px solid color($light, 50);

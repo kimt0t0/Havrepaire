@@ -25,7 +25,7 @@ defineProps<{
     padding: $space-m 0;
 
     .hero-title {
-        padding: $space-xs $space-s;
+        padding: $space-xs 0;
         font-size: $txt-xl;
         font-weight: 800;
         line-height: 1.2;
@@ -34,11 +34,12 @@ defineProps<{
         flex-wrap: wrap;
         align-items: center;
 
-        &.__centered {
+        &.__position-centered {
             justify-content: center;
+            text-align: center;
         }
 
-        &.__end {
+        &.__position-end {
             justify-content: flex-end;
         }
 

@@ -42,7 +42,8 @@ const navlinksEn = [
         <LinkParticle v-if="useLanguagesStore().activeLanguage === Languages.EN" v-for="(navlink, index) of navlinksEn"
             :key="index" :path="navlink.path" :title="navlink.name" :style="LinkStyles.BUTTON" :type="LinkTypes.RL"
             :admin="false" />
-        <ButtonParticle v-if="useAuthStore().activeUserToken">{{ useLanguagesStore().activeLanguage === Languages.FR ?
+        <ButtonParticle v-if="useAuthStore().activeUserToken" @click="useAuthStore().resetActiveUserToken">{{
+            useLanguagesStore().activeLanguage === Languages.FR ?
             'Me déconnecter' : 'Disconnect' }}</ButtonParticle>
         <LinkParticle v-else path="/connexion"
             :title="useLanguagesStore().activeLanguage === Languages.FR ? 'Connexion' : 'Login'" :style="LinkStyles.BUTTON"

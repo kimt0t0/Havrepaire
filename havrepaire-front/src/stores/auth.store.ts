@@ -1,14 +1,22 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { JwtToken } from "@/interfaces/JwtToken.interface";
-import type { User } from "@/interfaces/User.interface";
 
 export const useAuthStore = defineStore('authentication', () => {
     const activeUserToken = ref<JwtToken>();
-    const activeUser = ref<User>();
+
+    const setActiveUserToken = (token: JwtToken): void => {
+        activeUserToken.value = token;
+    }
+
+    const resetActiveUserToken = (): void => {
+        console.log('reset token...')
+        activeUserToken.value = undefined;
+    }
 
     return {
         activeUserToken,
-        activeUser
+        setActiveUserToken,
+        resetActiveUserToken
     }
 })

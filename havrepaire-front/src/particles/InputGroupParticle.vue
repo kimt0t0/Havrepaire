@@ -4,9 +4,10 @@ import { InputTypes } from '@/enums/input-types.enum';
 defineProps<{
     label: string;
     subtext?: string;
-    inputName: string;
-    inputType: InputTypes;
+    inputName?: string;
+    inputType?: InputTypes;
     placeholder?: string;
+    binding?: string
 }>();
 </script>
 
@@ -14,7 +15,9 @@ defineProps<{
     <div class="input-group">
         <label class="ig-label" :for="inputName">{{ label }}</label>
         <p v-if="subtext" class="ig-subtext">{{ subtext }}</p>
-        <input :type="inputType" :id="inputName" :name="inputName" :placeholder="placeholder" class="ig-input" />
+        <input v-if="inputType" :type="inputType" :id="inputName" :name="inputName" :placeholder="placeholder"
+            class="ig-input" :v-model="binding" />
+        <slot v-else></slot>
     </div>
 </template>
 
@@ -28,9 +31,22 @@ defineProps<{
 }
 
 .ig-label {
+    font-size: $txt-m;
     color: color($primary, 20);
     margin: 0 0 $space-xs 0;
     line-height: 1;
+}
+
+.ig-text {
+    color: color($primary, 20);
+    font-size: $txt-s;
+}
+
+.ig-subtext {
+    font-size: $txt-xs;
+    font-weight: 300;
+    font-style: oblique;
+    margin: 0 0 $space-s 0;
 }
 
 .ig-input {
@@ -40,10 +56,21 @@ defineProps<{
     font-size: $txt-m;
     padding: $space-xxs $space-xs;
     border-radius: $radius-xs;
-    width: 200px;
+    width: 240px;
+
+    &.__password {
+        padding: 0;
+        display: flex;
+        align-items: center;
+        border-right: none;
+    }
 
     &:focus {
         background-color: color($primary, 68);
+    }
+
+    @media (max-width: $bp-m) {
+        width: auto;
     }
 }
 </style>
