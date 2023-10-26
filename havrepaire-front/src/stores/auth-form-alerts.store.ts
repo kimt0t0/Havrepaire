@@ -1,38 +1,34 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import type { FormFieldAlert } from "@/interfaces/FormFieldAlert.interface";
 
 export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
-    const loginSuccess = ref<boolean>(false);
-    const loginFailure = ref<boolean>(false);
-    const signupSuccess = ref<boolean>(false);
-    const signupFailure = ref<boolean>(false);
 
-    const setLoginSuccess = (val: boolean): void => {
-        loginSuccess.value = val;
+    // VARIABLES
+    const usernameAlert = ref<FormFieldAlert>({
+        state: false
+    });
+    const passwordAlert = ref<FormFieldAlert>({
+        state: false
+    });
+
+    // SETTERS
+    const setUsernameAlert = (alert: FormFieldAlert) => {
+        usernameAlert.value = alert;
+        console.log(`Nouvelle valeur alerte: ${JSON.stringify(usernameAlert.value)}`)
     }
 
-    const setLoginFailure = (val: boolean): void => {
-        loginFailure.value = val;
+    const setPasswordAlert = (alert: FormFieldAlert) => {
+        passwordAlert.value = alert;
     }
 
-    const setSignupSuccess = (val: boolean): void => {
-        signupSuccess.value = val;
-    }
-
-    const setSignupFailure = (val: boolean): void => {
-        signupFailure.value = val;
-    }
-
+    // RETURN
     return {
-        // variables
-        loginSuccess,
-        loginFailure,
-        signupSuccess,
-        signupFailure,
-        // methods
-        setLoginSuccess,
-        setLoginFailure,
-        setSignupSuccess,
-        setSignupFailure
+        // VARIABLES
+        usernameAlert,
+        passwordAlert,
+        // METHODS
+        setUsernameAlert,
+        setPasswordAlert,
     }
 })

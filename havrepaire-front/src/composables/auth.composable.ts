@@ -9,7 +9,7 @@ export const useAuth = () => {
     const signupUser = async (e: Event, newUser: NewUser): Promise<void> => {
         e.preventDefault();
         try {
-            const result = await authSignupUtil(newUser);
+            await authSignupUtil(newUser);
         } catch (e) {
             console.error(`Oups, erreur lors de la création du compte: ${e}`);
         }

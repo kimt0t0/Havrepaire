@@ -16,7 +16,7 @@ import AlreadyAuthComponent from '@/components/auth/AlreadyAuthComponent.vue';
         <div v-else class="login-page-contents">
             <!-- French title -->
             <HeroTitleParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" normalText="Je me"
-                highlighted-text="connecte !" highlightColor="success" :position="FlexPositions.CE" />
+                highlighted-text="connecte !" highlightColor="success" />
             <!-- English title -->
             <HeroTitleParticle v-else normalText="I want to" highlighted-text="login !" highlightColor="success"
                 :position="FlexPositions.CE" />
@@ -33,5 +33,9 @@ import AlreadyAuthComponent from '@/components/auth/AlreadyAuthComponent.vue';
 </template>
 
 <style lang="scss">
-@use '@/styles/theme.scss';
+@use '@/styles/theme.scss' as *;
+
+.login-container {
+    padding: 0 $space-m;
+}
 </style>

@@ -7,7 +7,8 @@ defineProps<{
     inputName?: string;
     inputType?: InputTypes;
     placeholder?: string;
-    binding?: string
+    binding?: string;
+    success?: boolean;
 }>();
 </script>
 
@@ -16,7 +17,7 @@ defineProps<{
         <label class="ig-label" :for="inputName">{{ label }}</label>
         <p v-if="subtext" class="ig-subtext">{{ subtext }}</p>
         <input v-if="inputType" :type="inputType" :id="inputName" :name="inputName" :placeholder="placeholder"
-            class="ig-input" :v-model="binding" />
+            :class="success ? 'ig-input __success' : 'ig-input'" :v-model="binding" />
         <slot v-else></slot>
     </div>
 </template>
@@ -65,8 +66,23 @@ defineProps<{
         border-right: none;
     }
 
-    &:focus {
-        background-color: color($primary, 68);
+    &.__success {
+        color: color($success, 15);
+        border-color: color($success, 15);
+
+        >.input-password {
+            color: color($success, 15);
+        }
+
+        >button {
+            color: color($success, 15);
+            border-color: color($success, 15);
+
+            &:hover {
+                background-color: color($success, 15);
+                color: color($light, 50);
+            }
+        }
     }
 
     @media (max-width: $bp-m) {

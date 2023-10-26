@@ -10,7 +10,6 @@ export const useAuthStore = defineStore('authentication', () => {
     }
 
     const resetActiveUserToken = (): void => {
-        console.log('reset token...')
         activeUserToken.value = undefined;
     }
 
