@@ -17,8 +17,9 @@ export const validateUsername = (username: string): void => {
 }
 
 export const validatePassword = (password: string): void => {
+    let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W\_])[a-zA-Z0-9\W\_]{8,60}$/;
     // TODO: add check with regex
-    if (typeof password !== 'string' || password.length < 8 || password.length > 59) {
+    if (typeof password !== 'string' || password.length < 8 || password.length > 59 || !regex.test(password)) {
         return useAuthFormAlertsStore().setPasswordAlert({
             state: true,
             type: AlertTypes.DANGER,
