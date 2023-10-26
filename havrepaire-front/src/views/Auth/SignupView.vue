@@ -4,7 +4,6 @@ import { useLanguagesStore } from '@/stores/languages.store';
 import HeroTitleParticle from '@/particles/HeroTitleParticle.vue';
 import LinkParticle from '@/particles/LinkParticle.vue';
 import SignupForm from '@/components/auth/SignupFormComponent.vue';
-import { FlexPositions } from '@/enums/flex-positions.enum';
 import { Languages } from '@/enums/languages.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
@@ -14,14 +13,13 @@ import type AlreadyAuthComponentVue from '@/components/auth/AlreadyAuthComponent
 
 <template>
     <div class="classic-container signup-container">
-        <AlreadyAuthComponentVue v-if="useAuthStore().activeUserToken" />
+        <AlreadyAuthComponent v-if="useAuthStore().activeUserToken" />
         <div v-else class="signup-page-contents">
             <!-- French title -->
             <HeroTitleParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" normalText="Je"
-                highlighted-text="m'inscris !" highlightColor="success" :position="FlexPositions.CE" />
+                highlighted-text="m'inscris !" highlightColor="success" />
             <!-- English title -->
-            <HeroTitleParticle v-else normalText="I want to" highlighted-text="signup !" highlightColor="success"
-                :position="FlexPositions.CE" />
+            <HeroTitleParticle v-else normalText="I want to" highlighted-text="signup !" highlightColor="success" />
             <!-- Not registered - French -->
             <LinkParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" path="/connexion"
                 title="J'ai déjà un compte" :style="LinkStyles.LINK" :type="LinkTypes.RL" :admin="true" />

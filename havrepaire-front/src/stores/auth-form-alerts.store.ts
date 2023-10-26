@@ -8,7 +8,16 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
     const usernameAlert = ref<FormFieldAlert>({
         state: false
     });
+
     const passwordAlert = ref<FormFieldAlert>({
+        state: false
+    });
+
+    const emailAlert = ref<FormFieldAlert>({
+        state: false
+    });
+
+    const pronounsAlert = ref<FormFieldAlert>({
         state: false
     });
 
@@ -22,13 +31,26 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         passwordAlert.value = alert;
     }
 
+    const setEmailAlert = (alert: FormFieldAlert) => {
+        emailAlert.value = alert;
+    }
+
+    const setPronounsAlert = (alert: FormFieldAlert) => {
+        pronounsAlert.value = alert;
+        console.log(`Alerte pronoms: ${JSON.stringify(pronounsAlert.value)}`)
+    }
+
     // RETURN
     return {
         // VARIABLES
         usernameAlert,
         passwordAlert,
+        emailAlert,
+        pronounsAlert,
         // METHODS
         setUsernameAlert,
         setPasswordAlert,
+        setEmailAlert,
+        setPronounsAlert,
     }
 })

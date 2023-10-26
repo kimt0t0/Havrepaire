@@ -2,7 +2,6 @@
 import { useAuthStore } from '@/stores/auth.store';
 import { useLanguagesStore } from '@/stores/languages.store';
 import LoginForm from '@/components/auth/LoginFormComponent.vue';
-import { FlexPositions } from '@/enums/flex-positions.enum';
 import { Languages } from '@/enums/languages.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
@@ -18,8 +17,7 @@ import AlreadyAuthComponent from '@/components/auth/AlreadyAuthComponent.vue';
             <HeroTitleParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" normalText="Je me"
                 highlighted-text="connecte !" highlightColor="success" />
             <!-- English title -->
-            <HeroTitleParticle v-else normalText="I want to" highlighted-text="login !" highlightColor="success"
-                :position="FlexPositions.CE" />
+            <HeroTitleParticle v-else normalText="I want to" highlighted-text="login !" highlightColor="success" />
             <!-- Not registered - French -->
             <LinkParticle v-if="useLanguagesStore().activeLanguage === Languages.FR" path="/inscription"
                 title="Pas encore inscrit·e ?" :style="LinkStyles.LINK" :type="LinkTypes.RL" :admin="true" />

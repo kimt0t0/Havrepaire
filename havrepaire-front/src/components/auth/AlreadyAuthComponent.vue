@@ -37,6 +37,9 @@ import { LinkTypes } from '@/enums/link-types.enum';
 
 .aa-contents {
     width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .already-auth-ctas {
