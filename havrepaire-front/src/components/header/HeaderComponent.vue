@@ -47,6 +47,7 @@ import Navbar from './NavbarComponent.vue';
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    margin: 0 auto !important;
 
     @media (max-width: $bp-m) {
         flex-direction: column;
