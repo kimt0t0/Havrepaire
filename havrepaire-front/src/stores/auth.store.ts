@@ -3,14 +3,16 @@ import { ref } from "vue";
 import type { JwtToken } from "@/interfaces/JwtToken.interface";
 
 export const useAuthStore = defineStore('authentication', () => {
-    const activeUserToken = ref<JwtToken>();
+    const activeUserToken = ref<string | null>(localStorage.getItem('authenticatedUser'));
 
     const setActiveUserToken = (token: JwtToken): void => {
-        activeUserToken.value = token;
+        localStorage.setItem('authenticatedUser', JSON.stringify(token));
+        activeUserToken.value = localStorage.getItem('authenticatedUser');
     }
 
     const resetActiveUserToken = (): void => {
-        activeUserToken.value = undefined;
+        localStorage.clear();
+        activeUserToken.value = localStorage.getItem('authenticatedUser');
     }
 
     return {
