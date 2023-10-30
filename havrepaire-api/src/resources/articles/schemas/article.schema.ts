@@ -22,10 +22,10 @@ export class Article {
     titleEn: string;
 
     @Prop({ length: 1200, nullable: false })
-    parapraphFr: string;
+    textFr: string;
 
     @Prop({ length: 1200 })
-    parapraphEn: string;
+    textEn: string;
 
     @Prop()
     categories: Category[];
