@@ -48,7 +48,7 @@ export const validateEmail = (email: string): void => {
 }
 
 export const validatePronouns = (pronouns: string | undefined): void => {
-    let regex = /[a-zA-Z/,-·+]{2,10}$/;
+    let regex = /[a-zA-Z/,\-·+]{2,10}$/;
     if (!pronouns || pronouns.length === 0) {
         return useAuthFormAlertsStore().setPronounsAlert({
             state: false
