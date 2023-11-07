@@ -126,7 +126,15 @@ export class UsersService {
             // check password
             const isPasswordMatch = await bcrypt.compare(updateUserDto.password, authenticatedUser.hash);
             if (!isPasswordMatch) throw new NotAcceptableException('User password does not match');
-            // update user
+            // update user password if new password
+            let newHash: string;
+            if (updateUserDto.newPassword) {
+                newHash = await bcrypt.hash(updateUserDto.newPassword, 15);
+                await this.userModel
+                    .findByIdAndUpdate(new ObjectId(id), { hash: newHash })
+                    .exec()
+            }
+            // update user's other data
             await this.userModel
                 .findByIdAndUpdate(new ObjectId(id), updateUserDto)
                 .exec();

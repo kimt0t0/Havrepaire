@@ -16,7 +16,7 @@ export class Comment {
     @Prop({ length: 500, nullable: false })
     text: string;
 
-    @Prop()
+    @Prop({ default: Language.FR })
     languages: Language[];
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
