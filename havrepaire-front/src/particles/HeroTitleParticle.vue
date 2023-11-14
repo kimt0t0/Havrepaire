@@ -13,8 +13,8 @@ defineProps<{
 <template>
     <div class="hero-title-container">
         <h1 :class="'hero-title' + ' __position-' + position + ' __color-' + textColor">
-            {{ normalText }}&nbsp;<span
-                :class="'ht-highlighted-text __color-' + highlightColor + ' __color-' + textColor">{{ highlightedText
+            {{ normalText }}&nbsp;<span :class="'ht-highlighted-text __color-' + highlightColor + ' __color-' + textColor"
+                v-if="highlightedText">{{ highlightedText
                 }}</span>
         </h1>
     </div>
@@ -47,6 +47,10 @@ defineProps<{
 
         &.__color-light {
             color: color($light, 50);
+        }
+
+        &.__color-success {
+            color: color($success, 50);
         }
 
         .ht-highlighted-text {
