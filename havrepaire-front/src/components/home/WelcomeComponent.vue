@@ -16,7 +16,7 @@
 
 .welcome-container {
     margin-top: -$space-xxl;
-    margin-bottom: $space-xxl;
+    margin-bottom: $space-xl;
     box-sizing: border-box;
     min-height: 420px;
     display: flex;

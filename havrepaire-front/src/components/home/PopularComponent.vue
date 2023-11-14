@@ -46,7 +46,7 @@ const getColor = (index: number) => {
                     :articleId="article.id" />
             </div>
         </div>
-
+        <div class="popular-bottom"></div>
     </div>
 </template>
 
@@ -88,6 +88,16 @@ const getColor = (index: number) => {
         width: 100%;
         max-width: 100%;
     }
+}
+
+.popular-bottom {
+    box-sizing: border-box;
+    width: 110%;
+    height: 60px;
+    border-radius: 0 0 50% 50%;
+    background-color: color($primary, 15);
+    margin-left: -5%;
+    margin-bottom: -$space-xxl;
 }
 
 /* bubble's animation */

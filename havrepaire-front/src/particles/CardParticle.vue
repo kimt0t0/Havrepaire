@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
     articleId: string;
-    size?: string; // choose small / large
+    size?: string; // choose small / large / smallFixed / largeFixed
     color?: string; // choose primary / admin / success
     title: string;
     subtext: string;
@@ -80,6 +80,8 @@ defineProps<{
 
     .cp-illustration-container {
         width: auto;
+        background-color: color($primary, 50);
+        min-height: 135px;
         max-height: 135px;
         overflow: hidden;
 
@@ -98,8 +100,26 @@ defineProps<{
         }
     }
 
+    &.__size-smallFixed {
+        width: 340px;
+        min-width: 340px;
+        max-width: 340px;
+
+        @media (max-width: 550px) {
+            min-width: initial;
+            max-width: initial;
+            width: 100%;
+        }
+    }
+
     &.__size-large {
         width: 100%;
+    }
+
+    &.__size-largeFixed {
+        width: 510px;
+        min-width: 510px;
+        max-width: 510px;
     }
 
     &.__color-primary {

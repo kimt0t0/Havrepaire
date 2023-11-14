@@ -1,10 +1,10 @@
 import type { ObjectId } from "mongodb";
-import type { User } from "./User.interface";
 import type { Article } from "./Article.interface";
 
-export interface Like {
+export interface Illustration {
     _id: string | ObjectId;
-    author: string | ObjectId | User;
+    filename: string;
+    filepath: string;
     article: string | ObjectId | Article;
     createdAt: Date;
     updatedAt: Date;

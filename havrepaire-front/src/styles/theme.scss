@@ -12,6 +12,7 @@ body {
     font-weight: 400;
     font-size: 18px;
     color: color($dark, 50);
+    overflow-x: hidden;
     overflow-y: scroll;
 }
 

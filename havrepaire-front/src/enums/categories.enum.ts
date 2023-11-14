@@ -1,4 +1,4 @@
-export enum Category {
+export enum Categories {
     SHORT = 'short',
     LONG = 'long',
     NEWS = 'news',

@@ -16,12 +16,12 @@ export class CreateArticleDto {
 
     @IsString()
     @Length(10, 1200)
-    parapraphFr: string;
+    textFr: string;
 
     @IsString()
     @Length(10, 1200)
     @IsOptional()
-    parapraphEn?: string;
+    textEn?: string;
 
     @IsArray()
     @IsOptional()

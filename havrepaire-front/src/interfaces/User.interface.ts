@@ -13,4 +13,6 @@ export interface User {
     role: Role;
     likes: Like[];
     comments: Comment[];
+    createdAt: Date;
+    updatedAt: Date;
 }

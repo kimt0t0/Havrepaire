@@ -1,70 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useArticlesStore } from '@/stores/articles.store';
+import type { Article } from '@/interfaces/Article.interface';
 
-const items = [
-    {
-        id: 1,
-        illus: 'https://i.pinimg.com/originals/72/e1/be/72e1be8b2b0af7d7ec122cdfe9162341.jpg',
-        title: 'Texte 1',
-        text: 'Je suis le texte n°1.'
-    },
-    {
-        id: 2,
-        illus: 'https://cdn.thedesigninspiration.com/wp-content/uploads/2010/12/Dream-l.jpg',
-        title: 'Texte 2',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-    },
-    {
-        id: 3,
-        illus: 'https://3.bp.blogspot.com/-mYXkrhKQrNw/WMbF2Fa3l9I/AAAAAAAAB8o/UUckx_TLwI8In3yEcSV-OS4CS90m5jdEwCPcB/s1600/Kyoto%2BJapan%2BJapanese%2Bautumn%2Bcolours.JPG',
-        title: 'Texte 3 avec un titre plus long hahah',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-    },
-];
+const recentArticles = ref<Article[]>();
+onMounted(() => {
+    recentArticles.value = useArticlesStore().getRecentArticles().slice(0, 3);
+})
 
-const focusedItemIndex = ref<number>(0);
-const focusedItem = ref<{ id: number, illus: string, title: string, text: string }>(items[focusedItemIndex.value]);
-
-const setFocusedItem = (): void => {
-    focusedItem.value = items[focusedItemIndex.value];
-}
+const focusedIndex = ref<number>(0);
+const focusedArticle = computed(() => {
+    if (recentArticles.value) return recentArticles.value[focusedIndex.value];
+});
 
 const getPreviousItem = (): void => {
-    if (focusedItemIndex.value < 0 || focusedItemIndex.value > 2) focusedItemIndex.value = 0;
-    switch (focusedItemIndex.value) {
+    if (focusedIndex.value < 0 || focusedIndex.value > 2) focusedIndex.value = 0;
+    switch (focusedIndex.value) {
         case 0:
-            focusedItemIndex.value = 2;
+            focusedIndex.value = 2;
             break;
         case 1:
-            focusedItemIndex.value = 0;
+            focusedIndex.value = 0;
             break;
         case 2:
-            focusedItemIndex.value = 1;
+            focusedIndex.value = 1;
             break;
         default:
-            focusedItemIndex.value = 0;
+            focusedIndex.value = 0;
             break;
     }
-    setFocusedItem();
 }
 
 const getNextItem = (): void => {
-    if (focusedItemIndex.value < 0 || focusedItemIndex.value > 2) focusedItemIndex.value = 0;
-    switch (focusedItemIndex.value) {
+    if (focusedIndex.value < 0 || focusedIndex.value > 2) focusedIndex.value = 0;
+    switch (focusedIndex.value) {
         case 0:
-            focusedItemIndex.value = 1;
+            focusedIndex.value = 1;
             break;
         case 1:
-            focusedItemIndex.value = 2;
+            focusedIndex.value = 2;
             break;
         case 2:
-            focusedItemIndex.value = 0;
+            focusedIndex.value = 0;
             break;
         default:
-            focusedItemIndex.value = 0;
+            focusedIndex.value = 0;
             break;
     }
-    setFocusedItem();
 }
 </script>
 
@@ -78,13 +60,13 @@ const getNextItem = (): void => {
             <button class="carousel-button __left" @click="getPreviousItem">
                 &lt;</button>
             <!-- (displayed item) -->
-            <div class="carousel-central-item">
-                <RouterLink :to="'/articles/' + focusedItem.id" :title="'Lire le texte ' + focusedItem.title"
+            <div class="carousel-central-item" v-if="recentArticles">
+                <RouterLink :to="'/articles/' + focusedArticle?._id" :title="'Lire le texte ' + focusedArticle?.titleFr"
                     class="carousel-link">
                     <figure class="carousel-figure">
-                        <h3 class="carousel-item-title">{{ focusedItem.title }}</h3>
-                        <img class="carousel-item-illustration" :src="focusedItem.illus" alt="Illustration du texte" />
-                        <figcaption class="carousel-item-text">{{ focusedItem.text }}</figcaption>
+                        <h3 class="carousel-item-title">{{ focusedArticle?.titleFr }}</h3>
+                        <!-- <img class="carousel-item-illustration" :src="focusedArticle?.illustration" alt="Illustration du texte" /> -->
+                        <figcaption class="carousel-item-text">{{ focusedArticle?.textFr }}</figcaption>
                     </figure>
                 </RouterLink>
             </div>
@@ -107,39 +89,71 @@ const getNextItem = (): void => {
     max-width: 640px;
     height: 280px;
     border-radius: $radius-xs;
+
+    @media (max-width: 820px) {
+        width: 100%;
+        max-width: 100%;
+    }
 }
 
 .carousel-button {
-    @include button;
     width: $space-xxl;
     min-width: $space-xxl;
-
-    @media (max-width: $bp-xs) {
-        width: initial;
-    }
+    padding: $space-xs $space-s;
+    background-color: color($primary, 15);
+    color: color($primary, 68);
+    font-size: $txt-s;
+    border-radius: $radius-xxs;
+    border: 2px solid color($primary, 15);
+    cursor: pointer;
+    @include transition;
 
     &.__left {
         border-radius: $radius-xs 0 0 $radius-xs;
         box-shadow: 4px 2px 8px color($primary, 15);
+
+        &:hover,
+        &:focus {
+            box-shadow: 4px 2px 8px color($primary, 5);
+        }
     }
 
     &.__right {
         border-radius: 0 $radius-xs $radius-xs 0;
         box-shadow: 2px 2px 8px color($primary, 15);
+
+        &:hover,
+        &:focus {
+            box-shadow: 2px 2px 8px color($primary, 5);
+        }
     }
+
+    &:hover,
+    &:focus {
+        border-color: color($primary, 20);
+        background-color: color($primary, 50);
+        color: color($primary, 10);
+    }
+
 }
 
 .carousel-central-item {
-    background-color: color($primary, 70);
+    background-color: color($primary, 15);
     min-width: 100%;
     min-height: 98%;
-    border-top: 2px solid color($primary, 25);
-    border-bottom: 2px solid color($primary, 25);
-    box-shadow: 2px 2px 8px color($primary, 15);
+    border-top: 2px solid color($primary, 15);
+    border-bottom: 2px solid color($primary, 15);
+    box-shadow: 2px 2px 8px color($primary, 10);
 
-    @media (max-width: $bp-xs) {
+    @media (max-width: 820px) {
+        min-width: initial;
+        max-width: 100%;
         width: auto;
+    }
 
+    .carousel-link {
+        width: fit-content;
+        text-decoration: none;
     }
 
     .carousel-figure {
@@ -154,6 +168,12 @@ const getNextItem = (): void => {
         flex-direction: column;
         justify-content: space-between;
         align-items: flex-start;
+
+        @media (max-width: 820px) {
+            max-width: 100%;
+            width: auto;
+            padding: $space-s;
+        }
     }
 
     .carousel-item-illustration {
@@ -189,6 +209,10 @@ const getNextItem = (): void => {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        @media (max-width: 820px) {
+            white-space: initial;
+        }
     }
 
 }
