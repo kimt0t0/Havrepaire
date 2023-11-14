@@ -51,7 +51,6 @@ footer {
     margin: 0;
     height: fit-content;
     padding: $space-m 0;
-    margin-top: $space-xxl;
 
     @media (max-width: $bp-m) {
         margin-top: $space-m;

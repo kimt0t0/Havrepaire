@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import RecentCarousel from '@/components/home/RecentCarousel.vue';
+import PopularComponent from '@/components/home/PopularComponent.vue';
+import RecentCarouselComponent from '@/components/home/RecentCarouselComponent.vue';
 import WelcomeComponent from '@/components/home/WelcomeComponent.vue';
 
 
@@ -10,6 +11,8 @@ import WelcomeComponent from '@/components/home/WelcomeComponent.vue';
         <!-- Welcome -->
         <WelcomeComponent />
         <!-- Recent Texts -->
-        <RecentCarousel />
+        <RecentCarouselComponent />
+        <!-- Popular -->
+        <PopularComponent />
     </div>
 </template>

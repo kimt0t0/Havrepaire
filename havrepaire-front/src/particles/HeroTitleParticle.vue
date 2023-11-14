@@ -4,6 +4,7 @@ import { FlexPositions } from '@/enums/flex-positions.enum';
 defineProps<{
     normalText?: string;
     highlightedText?: string;
+    textColor?: string; // if not default choose 'light'
     highlightColor?: string; // if not default choose 'admin' or 'success'
     position?: FlexPositions;
 }>();
@@ -11,9 +12,10 @@ defineProps<{
 
 <template>
     <div class="hero-title-container">
-        <h1 :class="'hero-title' + ' __position-' + position">
-            {{ normalText }}&nbsp;<span :class="'ht-highlighted-text __color-' + highlightColor">{{ highlightedText
-            }}</span>
+        <h1 :class="'hero-title' + ' __position-' + position + ' __color-' + textColor">
+            {{ normalText }}&nbsp;<span
+                :class="'ht-highlighted-text __color-' + highlightColor + ' __color-' + textColor">{{ highlightedText
+                }}</span>
         </h1>
     </div>
 </template>
@@ -43,6 +45,10 @@ defineProps<{
             justify-content: flex-end;
         }
 
+        &.__color-light {
+            color: color($light, 50);
+        }
+
         .ht-highlighted-text {
             @include highlight;
 
@@ -52,6 +58,10 @@ defineProps<{
 
             &.__color-success {
                 @include highlight($color: color($success, 48));
+            }
+
+            &.__color-light {
+                color: color($light, 50);
             }
         }
     }

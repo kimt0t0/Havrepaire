@@ -3,7 +3,7 @@
 <template>
     <div class="welcome-container">
         <h2 class="welcome-title">
-            Bienvenu·e au <strong><img class="welcome-picture" src="@/assets/logo.svg"
+            Bienvenu·e au <strong><img class="welcome-picture" src="@/assets/logo-purple.webp"
                     alt="Cabane troglodyte confortable" />avrepaire</strong>
         </h2>
 
