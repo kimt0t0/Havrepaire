@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import type { Illustration } from '@/interfaces/Illustration.interface';
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
 defineProps<{
     articleId: string;
     size?: string; // choose small / large / smallFixed / largeFixed
     color?: string; // choose primary / admin / success
     title: string;
     subtext: string;
-    illustration: string;
+    illustration?: Illustration;
 }>();
 </script>
 
@@ -14,8 +18,8 @@ defineProps<{
         <div class="cp-title-container">
             <h3 class="cp-title">{{ title }}</h3>
         </div>
-        <div class="cp-illustration-container">
-            <img :src="illustration" :alt="'Illustration du texte ' + title" class="cp-illustration" />
+        <div class="cp-illustration-container" v-if="illustration">
+            <img :src="apiUrl + illustration.filepath" :alt="'Illustration du texte ' + title" class="cp-illustration" />
         </div>
         <div class="cp-subtext-container">
             <p class="cp-subtext">{{ subtext }}</p>

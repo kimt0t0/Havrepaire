@@ -13,7 +13,7 @@ export interface Article {
     textEn?: string;
     categories: Categories[];
     state: ArticleState;
-    illustration: string | ObjectId | Illustration;
+    illustration: void | string | ObjectId | Illustration;
     likes: string[] | ObjectId[] | Like[];
     comments: string[] | ObjectId[] | Comment[];
     createdAt: Date;

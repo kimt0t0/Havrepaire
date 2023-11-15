@@ -6,6 +6,7 @@ const axiosInstance = axios.create({
     // enable loading images and icons
     headers: {
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
         'Content-Type': 'application/json'
     }
 });

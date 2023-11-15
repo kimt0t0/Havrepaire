@@ -8,7 +8,8 @@ import { useArticlesStore } from '@/stores/articles.store';
             <HeroTitleParticle normalText="Explorez la " highlightedText="liste des articles" />
             <ol class="articles-list">
                 <li class="__item" v-for="(article, index) of useArticlesStore().articles" :key="index">
-                    <CardParticle :articleId="article._id" color="primary" :title="article.titleFr"
+                    <CardParticle :articleId="article._id" :illustration="article.illustration && article.illustration"
+                        color="primary" :title="article.titleFr"
                         :subtext="article.textFr && article.textFr.substring(0, 50)" size="smallFixed" />
                 </li>
             </ol>

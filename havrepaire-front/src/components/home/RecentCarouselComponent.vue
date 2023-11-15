@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useArticlesStore } from '@/stores/articles.store';
-import type { Article } from '@/interfaces/Article.interface';
-
-const recentArticles = ref<Article[]>();
-onMounted(() => {
-    recentArticles.value = useArticlesStore().getRecentArticles().slice(0, 3);
-})
 
 const focusedIndex = ref<number>(0);
 const focusedArticle = computed(() => {
-    if (recentArticles.value) return recentArticles.value[focusedIndex.value];
+    if (useArticlesStore().recentArticles) return useArticlesStore().recentArticles[focusedIndex.value];
 });
 
 const getPreviousItem = (): void => {
@@ -60,7 +54,7 @@ const getNextItem = (): void => {
             <button class="carousel-button __left" @click="getPreviousItem">
                 &lt;</button>
             <!-- (displayed item) -->
-            <div class="carousel-central-item" v-if="recentArticles">
+            <div class="carousel-central-item">
                 <RouterLink :to="'/articles/' + focusedArticle?._id" :title="'Lire le texte ' + focusedArticle?.titleFr"
                     class="carousel-link">
                     <figure class="carousel-figure">

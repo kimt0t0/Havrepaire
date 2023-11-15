@@ -1,43 +1,47 @@
 import { defineStore } from "pinia";
-import { computed, ref, type ComputedRef } from "vue";
+import { ref } from "vue";
 import type { Article } from "@/interfaces/Article.interface";
 import { useArticles } from "@/composables/articles.composable";
 
 export const useArticlesStore = defineStore('articles', () => {
 
     const articles = ref<void | Article[]>();
+    const recentArticles = ref<Article[]>();
+    const popularArticles = ref<Article[]>();
 
-    const getRecentArticles = (): Article[] => {
-        let recentArticles: Article[] = [];
+    const setRecentArticles = (): void => {
+        let newRecentArticles: Article[] = [];
         if (articles.value) {
-            recentArticles = articles.value.sort(function (a, b) {
+            newRecentArticles = articles.value.sort(function (a, b) {
                 var dateA = new Date(a.createdAt).getTime();
                 var dateB = new Date(b.createdAt).getTime();
 
                 return dateA - dateB
             })
         }
-        return recentArticles;
+        recentArticles.value = newRecentArticles;
     };
 
-    const getPopularArticles = (): Article[] => {
-        let popularArticles: Article[] = [];
+    const setPopularArticles = (): void => {
+        let newPopularArticles: Article[] = [];
         if (articles.value) {
-            popularArticles = articles.value.sort(function (a, b) {
+            newPopularArticles = articles.value.sort(function (a, b) {
                 return a.likes.length - b.likes.length
             })
         }
-        return popularArticles;
+        popularArticles.value = newPopularArticles;
     };
 
     const getArticles = async (): Promise<void> => {
         articles.value = await useArticles().getArticles();
+        setRecentArticles();
+        setPopularArticles();
     }
 
     return {
         articles,
         getArticles,
-        getRecentArticles,
-        getPopularArticles,
+        recentArticles,
+        popularArticles,
     }
 })
