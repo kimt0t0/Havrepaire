@@ -11,6 +11,11 @@ defineProps<{
     subtext: string;
     illustration?: Illustration;
 }>();
+
+const getImage = (filepath: string): string => {
+    return new URL(`${apiUrl}${filepath}`, import.meta.env.VITE_API_URL).href;
+}
+
 </script>
 
 <template>
@@ -18,8 +23,9 @@ defineProps<{
         <div class="cp-title-container">
             <h3 class="cp-title">{{ title }}</h3>
         </div>
-        <div class="cp-illustration-container" v-if="illustration">
-            <img :src="apiUrl + illustration.filepath" :alt="'Illustration du texte ' + title" class="cp-illustration" />
+        <div class="cp-illustration-container">
+            <img v-if="illustration" :src="getImage(illustration.filepath)" :alt="'Illustration du texte ' + title"
+                class="cp-illustration" />
         </div>
         <div class="cp-subtext-container">
             <p class="cp-subtext">{{ subtext }}</p>

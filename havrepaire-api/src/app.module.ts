@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { UsersModule } from './resources/users/users.module';
 import { LikesModule } from './resources/likes/likes.module';
 import { CommentsModule } from './resources/comments/comments.module';
@@ -19,6 +21,10 @@ import { RolesGuard } from './guards/roles.guard';
             envFilePath: ['.env', '.env.dev'],
             isGlobal: true,
             cache: true,
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '../'),
+            renderPath: '/public/files',
         }),
         MongooseModule.forRoot(process.env.DB_CONNECTION_STRING, {
             dbName: process.env.DB_NAME,
