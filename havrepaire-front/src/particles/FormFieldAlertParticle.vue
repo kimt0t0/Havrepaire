@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTypes } from '@/enums/alert-types.enum';
+import { AlertTypes } from '@/enums/forms/alert-types.enum';
 import type { FormFieldAlert } from '@/interfaces/FormFieldAlert.interface';
 
 defineProps<{

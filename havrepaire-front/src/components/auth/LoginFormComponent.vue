@@ -4,11 +4,11 @@ import { useAuth } from '@/composables/auth.composable';
 import { useAuthFormAlertsStore } from "@/stores/auth-form-alerts.store";
 import { validateUsername, validatePassword } from '@/validators/auth-validators.validators';
 import type { Credentials } from '@/interfaces/Credentials.interface';
-import { AlertTypes } from '@/enums/alert-types.enum';
+import { AlertTypes } from '@/enums/forms/alert-types.enum';
 import { ButtonSizes } from '@/enums/button-sizes.enum';
 import { ButtonStyles } from '@/enums/button-styles.enum';
 import { ButtonTypes } from '@/enums/button-types.enum';
-import { InputTypes } from '@/enums/input-types.enum';
+import { InputTypes } from '@/enums/forms/input-types.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
 
