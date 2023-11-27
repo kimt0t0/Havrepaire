@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('authentication', () => {
     const activeUserToken = ref<string | null>(localStorage.getItem('authenticatedUser'));
 
     const setActiveUserToken = (token: JwtToken): void => {
-        localStorage.setItem('authenticatedUser', JSON.stringify(token));
+        localStorage.setItem('authenticatedUser', JSON.stringify(token.access_token));
         activeUserToken.value = localStorage.getItem('authenticatedUser');
     }
 

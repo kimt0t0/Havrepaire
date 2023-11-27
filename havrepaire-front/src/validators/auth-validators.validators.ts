@@ -1,4 +1,4 @@
-import { AlertTypes } from "@/enums/alert-types.enum";
+import { AlertTypes } from "@/enums/forms/alert-types.enum";
 import { useAuthFormAlertsStore } from "@/stores/auth-form-alerts.store";
 
 export const validateUsername = (username: string): void => {

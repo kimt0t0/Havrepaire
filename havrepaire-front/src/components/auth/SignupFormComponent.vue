@@ -108,4 +108,4 @@ const signupFormData = reactive<NewUser>({
 .radio-input-line>input {
     cursor: pointer;
 }
-</style>
+</style>@/enums/forms/input-types.enum@/enums/forms/alert-types.enum

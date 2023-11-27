@@ -1,8 +1,10 @@
-import { authLoginUtil, authSignupUtil } from "@/utils/auth.utils";
+import { authLoginUtil, authSignupUtil, getAuthUserUtil } from "@/utils/auth.utils";
 import { useAuthStore } from "@/stores/auth.store";
 import { useAuthFormAlertsStore } from "@/stores/auth-form-alerts.store";
 import type { Credentials } from "@/interfaces/Credentials.interface";
 import type { NewUser } from "@/interfaces/NewUser.interface";
+import type { User } from "@/interfaces/User.interface";
+import { FormTypes } from "@/enums/forms/form-types.enum";
 
 export const useAuth = () => {
 
@@ -16,8 +18,8 @@ export const useAuth = () => {
         try {
             const result = await authLoginUtil({ username: newUser.username, password: newUser.password });
             useAuthStore().setActiveUserToken(result);
-            useAuthFormAlertsStore().setSignupSuccess(true);
-            setTimeout(() => useAuthFormAlertsStore().setSignupSuccess(false), 5000);
+            useAuthFormAlertsStore().setSignupSuccess({ form: FormTypes.SIGNUP, state: true });
+            setTimeout(() => useAuthFormAlertsStore().setSignupSuccess({ form: FormTypes.SIGNUP, state: false }), 5000);
         } catch (e) {
             console.error(`Oups, le nouveau compte n'a pas pu être connecté: ${e}`);
         }
@@ -28,17 +30,29 @@ export const useAuth = () => {
         try {
             const result = await authLoginUtil(credentials);
             useAuthStore().setActiveUserToken(result);
-            useAuthFormAlertsStore().setLoginSuccess(true);
-            setTimeout(() => useAuthFormAlertsStore().setLoginSuccess(false), 5000);
+            useAuthFormAlertsStore().setLoginSuccess({ form: FormTypes.LOGIN, state: true });
+            setTimeout(() => useAuthFormAlertsStore().setLoginSuccess({ form: FormTypes.LOGIN, state: false }), 5000);
         } catch (e) {
-            useAuthFormAlertsStore().setLoginFailure(true);
-            setTimeout(() => useAuthFormAlertsStore().setLoginFailure(false), 5000);
+            useAuthFormAlertsStore().setLoginFailure({ form: FormTypes.LOGIN, state: true });
+            setTimeout(() => useAuthFormAlertsStore().setLoginFailure({ form: FormTypes.LOGIN, state: false }), 5000);
             console.error(`Oups, erreur d'authentification: ${e}`);
+        }
+    }
+
+    const getAuthUser = async () => {
+        console.log('Loading user from composable...');
+        try {
+            const result = await getAuthUserUtil();
+            console.log(JSON.stringify(result));
+            return result;
+        } catch (e) {
+            console.error(`Oups, impossible de charger les données de l'utilisateur·ice authentifié·e !`);
         }
     }
 
     return {
         signupUser,
-        loginUser
+        loginUser,
+        getAuthUser
     }
 }

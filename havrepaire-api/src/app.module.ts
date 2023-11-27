@@ -31,7 +31,7 @@ import { RolesGuard } from './guards/roles.guard';
         }),
         ThrottlerModule.forRoot([
             {
-                ttl: 60000, //milliseconds
+                ttl: 60000, //milliseconds 60000 = 1min
                 limit: 15, // number of requests allowed per user on all guarded routes
             },
         ]),

@@ -89,4 +89,4 @@ defineProps<{
         width: auto;
     }
 }
-</style>
+</style>@/enums/forms/input-types.enum

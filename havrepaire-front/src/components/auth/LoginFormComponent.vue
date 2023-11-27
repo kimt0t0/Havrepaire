@@ -72,4 +72,4 @@ const loginFormData = reactive<Credentials>({ username: '', password: '' });
         padding: $space-s $space-m;
     }
 }
-</style>
+</style>@/enums/forms/input-types.enum@/enums/forms/alert-types.enum
