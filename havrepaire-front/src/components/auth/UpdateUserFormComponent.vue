@@ -19,6 +19,7 @@ defineProps<{
 const editUsername = ref<boolean>(false);
 const addNewPassword = ref<boolean>(false);
 const addNewEmail = ref<boolean>(false);
+const editGender = ref<boolean>(false);
 const editPronouns = ref<boolean>(false);
 
 // Form data
@@ -38,6 +39,11 @@ const toggleAddNewPassword = (): void => {
 const toggleAddNewEmail = (): void => {
     addNewEmail.value = !addNewEmail.value;
     if (addNewEmail.value === false) delete updateUserFormData.email;
+};
+
+const toggleEditGender = (): void => {
+    editGender.value = !editGender.value;
+    if (editGender.value === false) delete updateUserFormData.gender;
 };
 
 const toggleEditPronouns = (): void => {
@@ -71,19 +77,29 @@ const updateUser = (e: Event): void => {
         </InputGroupParticle>
         <!-- Gender -->
         <InputGroupParticle label="Genre:" inputName="gender">
-            <p class="account-form-text"><strong>Actuel:</strong> {{ getGenderString(useLanguagesStore().activeLanguage,
-                user.gender) }}</p>
+            <div class="input-line" v-if="!editGender">
+                <p class="account-form-text"><strong>Actuel:</strong> {{ getGenderString(useLanguagesStore().activeLanguage,
+                    user.gender) }}</p>
+                <ButtonParticle :type="ButtonTypes.BUT" :style="ButtonStyles.CL" @click="toggleEditGender">{{ editGender
+                    ? 'X' : 'O'
+                }}</ButtonParticle>
+            </div>
             <!-- (gender select menu) -->
-            <select class="__select-menu ig-input edit-user-input" id="gender" name="gender"
-                v-model="updateUserFormData.gender">
-                <option :value="undefined">Veuillez choisir une option</option>
-                <option :value="Gender.N">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Non-binaire' :
-                    'Non-binary' }}</option>
-                <option :value="Gender.F">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Femme' :
-                    'Woman' }}</option>
-                <option :value="Gender.M">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Homme' :
-                    'Man' }}</option>
-            </select>
+            <div class="input-line" v-else>
+                <select v-if="editGender" class="__select-menu ig-input edit-user-input" id="gender" name="gender"
+                    v-model="updateUserFormData.gender">
+                    <option :value="undefined">Veuillez choisir une option</option>
+                    <option :value="Gender.N">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Non-binaire' :
+                        'Non-binary' }}</option>
+                    <option :value="Gender.F">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Femme' :
+                        'Woman' }}</option>
+                    <option :value="Gender.M">{{ useLanguagesStore().activeLanguage === Languages.FR ? 'Homme' :
+                        'Man' }}</option>
+                </select>
+                <ButtonParticle :type="ButtonTypes.BUT" :style="ButtonStyles.CL" @click="toggleEditGender">{{ editGender
+                    ? 'X' : 'O'
+                }}</ButtonParticle>
+            </div>
         </InputGroupParticle>
         <!-- Pronouns -->
         <InputGroupParticle label="Pronoms:" inputName="pronouns">
@@ -165,13 +181,13 @@ const updateUser = (e: Event): void => {
     }
 
     .account-form-text {
-        margin: 0 0 $space-s;
-        font-size: $txt-xs;
         color: color($primary, 25);
+        margin: 0;
     }
 
     .__select-menu {
-        padding: $space-xs $space-s;
+        @include button();
+        border-radius: $radius-xs;
         width: 320px;
         cursor: pointer;
         @include transition();
@@ -188,6 +204,7 @@ const updateUser = (e: Event): void => {
 
     .input-line {
         display: flex;
+        align-items: center;
 
         >button {
             border-radius: $radius-xs;
@@ -196,7 +213,7 @@ const updateUser = (e: Event): void => {
     }
 
     .edit-user-data-group {
-        margin: $space-l 0;
+        margin: $space-m 0;
 
         >button {
             width: 220px;
@@ -215,7 +232,7 @@ const updateUser = (e: Event): void => {
 }
 
 .update-user-submit-container {
-    padding-top: $space-l;
+    padding-top: $space-s;
     display: flex;
     justify-content: center;
 }
