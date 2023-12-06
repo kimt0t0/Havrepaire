@@ -41,12 +41,4 @@ export class UpdateUserDto {
     @IsOptional()
     comments?: Comment[];
 
-    @IsString()
-    @IsOptional()
-    authorId?: string | ObjectId;
-
-    @IsString()
-    @Length(24)
-    @IsOptional()
-    articleId?: string | ObjectId;
 }

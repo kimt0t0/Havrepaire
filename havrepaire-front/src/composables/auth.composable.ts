@@ -3,8 +3,8 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useAuthFormAlertsStore } from "@/stores/auth-form-alerts.store";
 import type { Credentials } from "@/interfaces/Credentials.interface";
 import type { NewUser } from "@/interfaces/NewUser.interface";
-import type { User } from "@/interfaces/User.interface";
 import { FormTypes } from "@/enums/forms/form-types.enum";
+import type { User } from "@/interfaces/User.interface";
 
 export const useAuth = () => {
 
@@ -17,7 +17,7 @@ export const useAuth = () => {
         }
         try {
             const result = await authLoginUtil({ username: newUser.username, password: newUser.password });
-            useAuthStore().setActiveUserToken(result);
+            useAuthStore().setActiveUserToken(result.data.access_token);
             useAuthFormAlertsStore().setSignupSuccess({ form: FormTypes.SIGNUP, state: true });
             setTimeout(() => useAuthFormAlertsStore().setSignupSuccess({ form: FormTypes.SIGNUP, state: false }), 5000);
         } catch (e) {
@@ -29,7 +29,7 @@ export const useAuth = () => {
         e.preventDefault();
         try {
             const result = await authLoginUtil(credentials);
-            useAuthStore().setActiveUserToken(result);
+            useAuthStore().setActiveUserToken(result.data.access_token);
             useAuthFormAlertsStore().setLoginSuccess({ form: FormTypes.LOGIN, state: true });
             setTimeout(() => useAuthFormAlertsStore().setLoginSuccess({ form: FormTypes.LOGIN, state: false }), 5000);
         } catch (e) {
@@ -39,20 +39,23 @@ export const useAuth = () => {
         }
     }
 
-    const getAuthUser = async () => {
-        console.log('Loading user from composable...');
+    const getAuthUser = async (): Promise<User | void> => {
         try {
             const result = await getAuthUserUtil();
-            console.log(JSON.stringify(result));
-            return result;
+            return result.data;
         } catch (e) {
             console.error(`Oups, impossible de charger les données de l'utilisateur·ice authentifié·e !`);
         }
     }
 
+    const signoutUser = () => {
+        useAuthStore().resetActiveUserToken();
+    }
+
     return {
         signupUser,
         loginUser,
-        getAuthUser
+        getAuthUser,
+        signoutUser
     }
 }

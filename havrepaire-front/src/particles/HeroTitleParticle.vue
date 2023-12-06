@@ -47,6 +47,18 @@ defineProps<{
 
         &.__color-light {
             color: color($light, 50);
+
+            .ht-highlighted-text {
+                @include highlight;
+
+                &.__color-admin {
+                    @include highlight($color: color($secondary, 50));
+                }
+
+                &.__color-success {
+                    @include highlight($color: color($success, 35));
+                }
+            }
         }
 
         &.__color-success {

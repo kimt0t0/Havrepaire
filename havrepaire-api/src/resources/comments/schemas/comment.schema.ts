@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Language } from '../enums/language.enum';
 import { User } from 'src/resources/users/schemas/user.schema';
 import { Article } from 'src/resources/articles/schemas/article.schema';
-import { ObjectId } from 'mongodb';
 
 @Schema({ timestamps: true })
 export class Comment {

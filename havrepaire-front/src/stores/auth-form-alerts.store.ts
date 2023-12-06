@@ -15,6 +15,10 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         state: false
     });
 
+    const newPasswordAlert = ref<FormFieldAlert>({
+        state: false
+    });
+
     const emailAlert = ref<FormFieldAlert>({
         state: false
     });
@@ -52,6 +56,10 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         passwordAlert.value = alert;
     };
 
+    const setNewPasswordAlert = (alert: FormFieldAlert) => {
+        passwordAlert.value = alert;
+    };
+
     const setEmailAlert = (alert: FormFieldAlert) => {
         emailAlert.value = alert;
     };
@@ -82,6 +90,7 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         // VARIABLES
         usernameAlert,
         passwordAlert,
+        newPasswordAlert,
         emailAlert,
         pronounsAlert,
         signupSuccess,
@@ -91,6 +100,7 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         // METHODS
         setUsernameAlert,
         setPasswordAlert,
+        setNewPasswordAlert,
         setEmailAlert,
         setPronounsAlert,
         setSignupSuccess,
