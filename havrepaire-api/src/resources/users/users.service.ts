@@ -112,6 +112,7 @@ export class UsersService {
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
         try {
+            console.log('Calling service...')
             // check authenticated user
             const request = this.request;
             const token = request.rawHeaders.find(header => header.startsWith('Bearer ')).replace('Bearer ', '').replace(' ', '');

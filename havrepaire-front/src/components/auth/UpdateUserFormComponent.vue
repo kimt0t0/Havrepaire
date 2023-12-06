@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import type { ObjectId } from 'mongodb';
 import { getGenderString } from '@/utils/get-strings.utils';
 import { validateUsername, validatePassword, validateNewPassword, validateEmail, validatePronouns } from '@/validators/auth-validators.validators';
 import { useLanguagesStore } from '@/stores/languages.store';
@@ -7,9 +8,10 @@ import { Languages } from '@/enums/languages.enum';
 import { ButtonStyles } from '@/enums/button-styles.enum';
 import { ButtonSizes } from '@/enums/button-sizes.enum';
 import { ButtonStates } from '@/enums/button-states.enum';
-import type { User } from '@/interfaces/User.interface';
 import { Gender } from '@/enums/users/gender.enum';
 import { ButtonTypes } from '@/enums/button-types.enum';
+import type { User } from '@/interfaces/User.interface';
+import { useUsers } from '@/composables/users.composable';
 
 defineProps<{
     user: User | void
@@ -53,16 +55,17 @@ const toggleEditPronouns = (): void => {
 
 
 // Update user function
-const updateUser = (e: Event): void => {
+const updateUser = (e: Event, userId: ObjectId | string | void): void => {
     e.preventDefault();
-    console.log(`New user data: ${updateUserFormData.username}`);
+    const updatedUser = useUsers().updateUser(userId, updateUserFormData)
+    console.log(JSON.stringify(updatedUser));
     // (todo: activate alert if password is wrong and API refused update / if wrong data).
 }
 </script>
 
 <template>
     <!-- FORM -->
-    <form v-if="user" class="account-form" @submit="updateUser($event)">
+    <form v-if="user" class="account-form" @submit="updateUser($event, user._id)">
         <h3 class="account-form-title">Mes informations</h3>
         <!-- Username -->
         <InputGroupParticle label="Pseudonyme:" inputName="username">
@@ -137,19 +140,19 @@ const updateUser = (e: Event): void => {
                 }}
             </ButtonParticle>
             <InputGroupParticle v-if="addNewPassword" inputName="newPassword">
-                <input class="ig-input edit-user-input" type="text" id="newPassword" name="newPassword"
+                <input class="ig-input edit-user-input" type="password" id="newPassword" name="newPassword"
                     v-model="updateUserFormData.username" @change="validateNewPassword(updateUserFormData.newPassword)" />
             </InputGroupParticle>
         </div>
         <!-- Password - mandatory -->
         <InputGroupParticle label="Mot de passe actuel (obligatoire):" inputName="password">
-            <input class="ig-input edit-user-input" type="text" id="password" name="password"
+            <input class="ig-input edit-user-input" type="password" id="password" name="password"
                 v-model="updateUserFormData.password" @change="validatePassword(updateUserFormData.password)" />
         </InputGroupParticle>
         <!-- Submit button -->
         <div class="update-user-submit-container">
             <ButtonParticle :style="ButtonStyles.AD" :size="ButtonSizes.BIG"
-                :state="updateUserFormData.password ? ButtonStates.CL : ButtonStates.CL">
+                :state="updateUserFormData.password ? ButtonStates.CL : ButtonStates.DA">
                 Envoyer
             </ButtonParticle>
         </div>
