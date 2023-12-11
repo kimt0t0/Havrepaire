@@ -27,6 +27,12 @@ const editPronouns = ref<boolean>(false);
 // Form data
 const updateUserFormData = reactive<any>({});
 
+// Show/hide password
+const showPassword = ref<boolean>(false);
+const toggleShowPassword = (): void => {
+    showPassword.value = !showPassword.value;
+}
+
 // Handle form toggler
 const toggleEditUsername = (): void => {
     editUsername.value = !editUsername.value;
@@ -146,8 +152,13 @@ const updateUser = (e: Event, userId: ObjectId | string | void): void => {
         </div>
         <!-- Password - mandatory -->
         <InputGroupParticle label="Mot de passe actuel (obligatoire):" inputName="password">
-            <input class="ig-input edit-user-input" type="password" id="password" name="password"
-                v-model="updateUserFormData.password" @change="validatePassword(updateUserFormData.password)" />
+            <div class="input-line">
+                <input class="ig-input edit-user-input" :type="showPassword ? 'text' : 'password'" id="password"
+                    name="password" v-model="updateUserFormData.password"
+                    @change="validatePassword(updateUserFormData.password)" />
+                <ButtonParticle :type="ButtonTypes.BUT" :style="ButtonStyles.CL" @click="toggleShowPassword">{{ showPassword
+                    ? 'X' : 'O' }}</ButtonParticle>
+            </div>
         </InputGroupParticle>
         <!-- Submit button -->
         <div class="update-user-submit-container">
@@ -184,8 +195,13 @@ const updateUser = (e: Event, userId: ObjectId | string | void): void => {
     }
 
     .account-form-text {
+        width: 255px;
         color: color($primary, 25);
         margin: 0;
+
+        @media (max-width: $bp-xs) {
+            width: 100%;
+        }
     }
 
     .__select-menu {
@@ -221,8 +237,8 @@ const updateUser = (e: Event, userId: ObjectId | string | void): void => {
         >button {
             width: 220px;
 
-            @media (max-width: $bp-xxs) {
-                width: auto;
+            @media (max-width: $bp-xs) {
+                width: 100%;
             }
 
         }
@@ -236,7 +252,10 @@ const updateUser = (e: Event, userId: ObjectId | string | void): void => {
 
 .update-user-submit-container {
     padding-top: $space-s;
-    display: flex;
-    justify-content: center;
+
+    @media (max-width: $bp-s) {
+        display: flex;
+        justify-content: center;
+    }
 }
 </style>

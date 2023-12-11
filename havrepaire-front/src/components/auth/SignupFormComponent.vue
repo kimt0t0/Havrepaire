@@ -30,7 +30,7 @@ const signupFormData = reactive<NewUser>({
 <template>
     <form class="signup-form" @submit="signupUser($event, signupFormData)">
         <!-- Username -->
-        <InputGroupParticle label="Pseudonyme" inputName="username">
+        <InputGroupParticle label="Pseudonyme" inputName="username" color="admin">
             <input :type="InputTypes.TEXT" name="username" id="username" placeholder="Psudonim"
                 v-model="signupFormData.username"
                 :class="useAuthFormAlertsStore().usernameAlert.type === AlertTypes.SUCCESS ? 'ig-input __success' : 'ig-input'"
@@ -38,7 +38,7 @@ const signupFormData = reactive<NewUser>({
             <FormFieldAlertParticle :alert="useAuthFormAlertsStore().usernameAlert" />
         </InputGroupParticle>
         <!-- Password -->
-        <InputGroupParticle label="Mot-de-passe" inputName="password">
+        <InputGroupParticle label="Mot-de-passe" inputName="password" color="admin">
             <div
                 :class="useAuthFormAlertsStore().passwordAlert.type === AlertTypes.SUCCESS ? 'ig-input __password __success' : 'ig-input __password'">
                 <input :type="showPassword ? InputTypes.TEXT : InputTypes.PASS" name="password" id="password"
@@ -108,4 +108,4 @@ const signupFormData = reactive<NewUser>({
 .radio-input-line>input {
     cursor: pointer;
 }
-</style>@/enums/forms/input-types.enum@/enums/forms/alert-types.enum
+</style>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+import { validateEmail, validatePassword } from '@/validators/auth-validators.validators';
 import { ButtonSizes } from '@/enums/button-sizes.enum';
 import { ButtonStyles } from '@/enums/button-styles.enum';
 import { ButtonTypes } from '@/enums/button-types.enum';
@@ -10,17 +11,14 @@ defineProps<{
     userId: ObjectId | string | void;
 }>();
 
-// Check deletion requirements
-const isPasswordChecked = ref<boolean>(false);
-const isEmailChecked = ref<boolean>(false);
+// Handle show/hide password
+const showPassword = ref<boolean>(false);
 
-const checkPassword = () => {
-    console.log('Check if user entered strong password');
+const toggleShowPassword = (): void => {
+    showPassword.value = !showPassword.value;
 };
 
-const checkEmail = () => {
-    console.log('Check if user entered a correct email address');
-};
+const deleteUserFormData = reactive<any>({});
 
 // Delete user
 const deleteUser = (e: Event) => {
@@ -33,12 +31,47 @@ const deleteUser = (e: Event) => {
 <template>
     <form v-if="userId" class="account-form" @submit="deleteUser($event)">
         <h3 class="account-form-title">Supprimer mon compte</h3>
-        <ButtonParticle :type="ButtonTypes.SUB" :style="ButtonStyles.AD" :size="ButtonSizes.BIG"
-            :state="isPasswordChecked && isEmailChecked ? ButtonStates.CL : ButtonStates.DA">Confirmer la suppression
-        </ButtonParticle>
+        <!-- Email -->
+        <div class="edit-user-data-group">
+            <InputGroupParticle label="Adresse email (obligatoire):" inputName="email" color="admin">
+                <input class="ig-input __admin delete-user-input" type="email" id="email" name="email"
+                    v-model="deleteUserFormData.userEmail" @change="validateEmail(deleteUserFormData.userEmail)" />
+            </InputGroupParticle>
+        </div>
+        <!-- Password -->
+        <InputGroupParticle label="Mot de passe (obligatoire):" inputName="password" color="admin">
+            <div class="input-line">
+                <input class="ig-input __admin delete-user-input" :type="showPassword ? 'text' : 'password'" id="password"
+                    name="password" v-model="deleteUserFormData.userPassword"
+                    @change="validatePassword(deleteUserFormData.userPassword)" />
+                <ButtonParticle :type="ButtonTypes.BUT" :style="ButtonStyles.AD" color="admin" @click="toggleShowPassword">
+                    {{ showPassword
+                        ? 'X' : 'O' }}</ButtonParticle>
+            </div>
+        </InputGroupParticle>
+        <!-- Submit button -->
+        <div class="delete-user-submit-container">
+            <ButtonParticle :type="ButtonTypes.SUB" :style="ButtonStyles.AD" :size="ButtonSizes.BIG"
+                :state="deleteUserFormData.userPassword?.length >= 8 && deleteUserFormData.userEmail?.length > 8 ? ButtonStates.CL : ButtonStates.DA">
+                Confirmer la suppression
+            </ButtonParticle>
+        </div>
     </form>
 </template>
 
 <style lang="scss">
 @use '@/styles/theme.scss' as *;
+
+.delete-user-input {
+    border-width: 2px;
+}
+
+.delete-user-submit-container {
+    padding-top: $space-s;
+
+    @media (max-width: $bp-s) {
+        display: flex;
+        justify-content: center;
+    }
+}
 </style>

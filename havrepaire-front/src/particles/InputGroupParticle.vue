@@ -8,16 +8,16 @@ defineProps<{
     inputType?: InputTypes;
     placeholder?: string;
     binding?: string;
-    success?: boolean;
+    color?: string; //choose success or admin
 }>();
 </script>
 
 <template>
     <div class="input-group">
-        <label class="ig-label" :for="inputName">{{ label }}</label>
+        <label :class="'ig-label __' + color" :for="inputName">{{ label }}</label>
         <p v-if="subtext" class="ig-subtext">{{ subtext }}</p>
         <input v-if="inputType" :type="inputType" :id="inputName" :name="inputName" :placeholder="placeholder"
-            :class="success ? 'ig-input __success' : 'ig-input'" :v-model="binding" />
+            :class="'ig-input __' + color" :v-model="binding" />
         <slot v-else></slot>
     </div>
 </template>
@@ -36,6 +36,10 @@ defineProps<{
     color: color($primary, 20);
     margin: 0 0 $space-xs 0;
     line-height: 1;
+
+    &.__admin {
+        color: color($secondary, 45);
+    }
 }
 
 .ig-text {
@@ -85,8 +89,31 @@ defineProps<{
         }
     }
 
+    &.__admin {
+        color: color($secondary, 15);
+        border-color: color($secondary, 50);
+
+        >.input-password {
+            color: color($success, 15);
+        }
+
+        >button {
+            color: color($secondary, 15);
+            border-color: color($secondary, 50);
+
+            &:hover {
+                background-color: color($secondary, 50);
+                color: color($secondary, 15);
+            }
+        }
+    }
+
     @media (max-width: $bp-m) {
         width: auto;
+    }
+
+    @media (max-width: $bp-xs) {
+        width: 100%;
     }
 }
 </style>@/enums/forms/input-types.enum
