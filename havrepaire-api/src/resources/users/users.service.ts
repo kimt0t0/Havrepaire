@@ -46,7 +46,7 @@ export class UsersService {
                 pronouns,
                 role
             } = createUserDto;
-            if (role === Role.ADMIN) throw new NotAcceptableException(`You cannot create an admin account. If you need one please contact the developer.`);
+            if (role && role === Role.ADMIN) throw new NotAcceptableException(`You cannot create an admin account. If you need one please contact the developer.`);
             const hash = await bcrypt.hash(password, 15);
             // const maskedEmail = maskEmail2(email);
             // masking email caused index mistaken errors in db
@@ -122,7 +122,7 @@ export class UsersService {
                 )
                 .populate('role')
                 .select('-email');
-            if (authenticatedUser.role !== Role.ADMIN && authenticatedUser._id.toString() !== id) throw new UnauthorizedException('A user account can be updated only by its owner or an admin account.');
+            if (authenticatedUser.role && authenticatedUser.role !== Role.ADMIN && authenticatedUser._id.toString() !== id) throw new UnauthorizedException('A user account can be updated only by its owner or an admin account.');
             // check password
             const isPasswordMatch = await bcrypt.compare(updateUserDto.password, authenticatedUser.hash);
             if (!isPasswordMatch) throw new NotAcceptableException('User password does not match');

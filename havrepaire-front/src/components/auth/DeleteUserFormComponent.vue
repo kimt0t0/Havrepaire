@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, toRefs } from 'vue';
+import { useRouter } from 'vue-router';
 import { validateEmail, validatePassword } from '@/validators/auth-validators.validators';
 import { ButtonSizes } from '@/enums/button-sizes.enum';
 import { ButtonStyles } from '@/enums/button-styles.enum';
 import { ButtonTypes } from '@/enums/button-types.enum';
-import type { ObjectId } from 'mongodb';
 import { ButtonStates } from '@/enums/button-states.enum';
+import { useUsers } from '@/composables/users.composable';
 
-defineProps<{
-    userId: ObjectId | string | void;
-}>();
+const props = defineProps({
+    userId: String || undefined
+});
+
+const { userId } = toRefs(props);
 
 // Handle show/hide password
 const showPassword = ref<boolean>(false);
@@ -23,7 +26,8 @@ const deleteUserFormData = reactive<any>({});
 // Delete user
 const deleteUser = (e: Event) => {
     e.preventDefault();
-    console.log('Suppression de l\'utilisateur·ice...');
+    useUsers().deleteUser(userId?.value, deleteUserFormData);
+    useRouter().push('/connexion');
 };
 
 </script>

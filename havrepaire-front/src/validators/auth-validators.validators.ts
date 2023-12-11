@@ -50,7 +50,7 @@ export const validateNewPassword = (password: string): void => {
 
 export const validateEmail = (email: string): void => {
     let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (typeof email !== 'string' || email.length > 8 || email.length > 100 || !regex.test(email)) {
+    if (typeof email !== 'string' || email.length < 8 || email.length > 100 || !regex.test(email)) {
         return useAuthFormAlertsStore().setEmailAlert({
             state: true,
             type: AlertTypes.DANGER,

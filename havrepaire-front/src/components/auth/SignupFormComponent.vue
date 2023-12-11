@@ -17,20 +17,14 @@ const toggleShowPassword = (): void => {
     showPassword.value = !showPassword.value;
 }
 
-const signupFormData = reactive<NewUser>({
-    username: "",
-    password: "",
-    email: "",
-    gender: undefined,
-    pronouns: ''
-});
+const signupFormData = reactive<any>({});
 
 </script>
 
 <template>
     <form class="signup-form" @submit="signupUser($event, signupFormData)">
         <!-- Username -->
-        <InputGroupParticle label="Pseudonyme" inputName="username" color="admin">
+        <InputGroupParticle label="Pseudonyme" inputName="username">
             <input :type="InputTypes.TEXT" name="username" id="username" placeholder="Psudonim"
                 v-model="signupFormData.username"
                 :class="useAuthFormAlertsStore().usernameAlert.type === AlertTypes.SUCCESS ? 'ig-input __success' : 'ig-input'"
@@ -38,7 +32,7 @@ const signupFormData = reactive<NewUser>({
             <FormFieldAlertParticle :alert="useAuthFormAlertsStore().usernameAlert" />
         </InputGroupParticle>
         <!-- Password -->
-        <InputGroupParticle label="Mot-de-passe" inputName="password" color="admin">
+        <InputGroupParticle label="Mot-de-passe" inputName="password">
             <div
                 :class="useAuthFormAlertsStore().passwordAlert.type === AlertTypes.SUCCESS ? 'ig-input __password __success' : 'ig-input __password'">
                 <input :type="showPassword ? InputTypes.TEXT : InputTypes.PASS" name="password" id="password"

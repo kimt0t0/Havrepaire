@@ -3,6 +3,7 @@ import { deleteUserUtil, updateUserUtil } from "@/utils/users.utils";
 import type { UpdateUser } from "@/interfaces/UpdateUser.interface"
 import type { User } from "@/interfaces/User.interface"
 import type { DeleteUser } from "@/interfaces/DeleteUser.interface";
+import { useAuth } from "./auth.composable";
 
 export const useUsers = () => {
 
@@ -15,10 +16,10 @@ export const useUsers = () => {
         }
     }
 
-    const deleteUser = async (userId: ObjectId | string | void, formData: DeleteUser): Promise<User | void> => {
+    const deleteUser = async (userId: string | undefined, formData: DeleteUser): Promise<void> => {
         try {
-            const deletedUser = await deleteUserUtil(userId, formData);
-            return deletedUser;
+            await deleteUserUtil(userId, formData);
+            useAuth().signoutUser();
         } catch (e) {
             console.error(`Oups, il y a eu une erreur lors de la tentative de suppression du compte.`);
         }
