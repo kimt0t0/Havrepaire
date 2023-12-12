@@ -17,8 +17,7 @@ export const updateUserUtil = (userId: ObjectId | string | void, formData: Updat
     if (decodedToken._id.toString() !== userId.toString() && decodedToken.role !== Role.ADMIN) {
         return console.error('Vous n\'êtes pas autorisé·e à effectuer cette action !');
     }
-    console.log(`Envoi de la requête à l'adresse '/users/${userId.toString()}'`)
-    return axiosInstance.patch(`/users/${decodedToken._id}`, formData);
+    return axiosInstance.patch(`/users/${userId.toString()}`, formData);
 }
 
 export const deleteUserUtil = (userId: ObjectId | string | void, formData: DeleteUser): Promise<User> | void => {

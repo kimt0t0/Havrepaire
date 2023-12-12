@@ -1,5 +1,5 @@
-import { ref } from "vue";
 import { defineStore } from "pinia";
+import { ref } from "vue";
 import type { FormFieldAlert } from "@/interfaces/FormFieldAlert.interface";
 import type { FormAlert } from "@/interfaces/FormAlert.interface";
 import { FormTypes } from "@/enums/forms/form-types.enum";
@@ -108,4 +108,4 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         setLoginSuccess,
         setLoginFailure
     }
-})
+});

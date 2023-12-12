@@ -4,6 +4,7 @@ import type { ObjectId } from 'mongodb';
 import { getGenderString } from '@/utils/get-strings.utils';
 import { validateUsername, validatePassword, validateNewPassword, validateEmail, validatePronouns } from '@/validators/auth-validators.validators';
 import { useLanguagesStore } from '@/stores/languages.store';
+import { useUserFormAlertsStore } from '@/stores/user-form-alerts.store';
 import { Languages } from '@/enums/languages.enum';
 import { ButtonStyles } from '@/enums/button-styles.enum';
 import { ButtonSizes } from '@/enums/button-sizes.enum';
@@ -12,6 +13,8 @@ import { Gender } from '@/enums/users/gender.enum';
 import { ButtonTypes } from '@/enums/button-types.enum';
 import type { User } from '@/interfaces/User.interface';
 import { useUsers } from '@/composables/users.composable';
+import { FormTypes } from '@/enums/forms/form-types.enum';
+import { AlertTypes } from '@/enums/forms/alert-types.enum';
 
 defineProps<{
     user: User | void
@@ -63,9 +66,23 @@ const toggleEditPronouns = (): void => {
 // Update user function
 const updateUser = (e: Event, userId: ObjectId | string | void): void => {
     e.preventDefault();
-    const updatedUser = useUsers().updateUser(userId, updateUserFormData)
-    console.log(JSON.stringify(updatedUser));
-    // (todo: activate alert if password is wrong and API refused update / if wrong data).
+    try {
+        useUsers().updateUser(userId, updateUserFormData);
+        useUserFormAlertsStore().setUpdateAlert({
+            state: true,
+            form: FormTypes.UPDATE,
+            type: AlertTypes.SUCCESS,
+            message: 'Ton profil a bien été mis à jour !'
+        });
+    } catch (e) {
+        useUserFormAlertsStore().setUpdateAlert({
+            state: true,
+            form: FormTypes.DELETE,
+            type: AlertTypes.DANGER,
+            message: 'Oups, il y a visiblement eu une erreur... Vérifie que tu as bien complété le formulaire.\nSi le problème persiste, n\'hésite pas à me contacter.'
+        });
+        console.error(`Il y a eu une erreur lors de la mise à jour du compte utilisateur: ${JSON.stringify(e)}`);
+    }
 }
 </script>
 
@@ -167,6 +184,8 @@ const updateUser = (e: Event, userId: ObjectId | string | void): void => {
                 Envoyer
             </ButtonParticle>
         </div>
+        <FormAlertParticle v-if="useUserFormAlertsStore().updateAlert.state === true"
+            :alert="useUserFormAlertsStore().updateAlert" />
     </form>
     <!-- ERROR MESSAGE -->
     <p class="error loading" v-else>

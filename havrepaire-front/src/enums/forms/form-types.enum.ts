@@ -1,4 +1,6 @@
 export enum FormTypes {
     SIGNUP = 'signup',
-    LOGIN = 'login'
+    LOGIN = 'login',
+    UPDATE = 'update',
+    DELETE = 'delete'
 }
