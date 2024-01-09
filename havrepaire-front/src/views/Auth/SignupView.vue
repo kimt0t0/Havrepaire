@@ -7,7 +7,7 @@ import SignupForm from '@/components/auth/SignupFormComponent.vue';
 import { Languages } from '@/enums/languages.enum';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
-import type AlreadyAuthComponentVue from '@/components/auth/AlreadyAuthComponent.vue';
+import AlreadyAuthComponent from '@/components/auth/AlreadyAuthComponent.vue';
 
 </script>
 

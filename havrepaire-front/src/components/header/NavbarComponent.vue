@@ -5,6 +5,7 @@ import { Languages } from '@/enums/languages.enum';
 import LinkParticle from '@/particles/LinkParticle.vue';
 import { LinkStyles } from '@/enums/link-styles.enum';
 import { LinkTypes } from '@/enums/link-types.enum';
+import { useAuth } from '@/composables/auth.composable';
 import { useAuthStore } from '@/stores/auth.store';
 
 const navlinksFr = [
@@ -46,7 +47,7 @@ const navlinksEn = [
         <LinkParticle v-if="useAuthStore().activeUserToken" path="/mon-compte" :style="LinkStyles.BUTTON"
             :title="useLanguagesStore().activeLanguage === Languages.FR ? 'Tableau de bord' : 'Dashboard'"
             :type="LinkTypes.RL" :admin="true" />
-        <ButtonParticle v-if="useAuthStore().activeUserToken" @click="useAuthStore().resetActiveUserToken">{{
+        <ButtonParticle v-if="useAuthStore().activeUserToken" @click="useAuth().signoutUser()">{{
             useLanguagesStore().activeLanguage === Languages.FR ?
             'Me déconnecter' : 'Disconnect' }}</ButtonParticle>
         <LinkParticle v-else path="/connexion"
@@ -62,7 +63,8 @@ const navlinksEn = [
     display: flex;
     justify-content: space-between;
 
-    .button-link {
+    .button-link,
+    .button-classic {
         margin: 0 $space-s;
     }
 
@@ -70,7 +72,8 @@ const navlinksEn = [
         width: 100%;
         flex-direction: column;
 
-        .button-link {
+        .button-link,
+        .button-classic {
             margin: $space-s 0;
         }
     }

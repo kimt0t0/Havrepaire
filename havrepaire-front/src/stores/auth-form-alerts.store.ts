@@ -1,5 +1,5 @@
-import { ref } from "vue";
 import { defineStore } from "pinia";
+import { ref } from "vue";
 import type { FormFieldAlert } from "@/interfaces/FormFieldAlert.interface";
 import type { FormAlert } from "@/interfaces/FormAlert.interface";
 import { FormTypes } from "@/enums/forms/form-types.enum";
@@ -12,6 +12,10 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
     });
 
     const passwordAlert = ref<FormFieldAlert>({
+        state: false
+    });
+
+    const newPasswordAlert = ref<FormFieldAlert>({
         state: false
     });
 
@@ -52,6 +56,10 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         passwordAlert.value = alert;
     };
 
+    const setNewPasswordAlert = (alert: FormFieldAlert) => {
+        passwordAlert.value = alert;
+    };
+
     const setEmailAlert = (alert: FormFieldAlert) => {
         emailAlert.value = alert;
     };
@@ -82,6 +90,7 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         // VARIABLES
         usernameAlert,
         passwordAlert,
+        newPasswordAlert,
         emailAlert,
         pronounsAlert,
         signupSuccess,
@@ -91,6 +100,7 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         // METHODS
         setUsernameAlert,
         setPasswordAlert,
+        setNewPasswordAlert,
         setEmailAlert,
         setPronounsAlert,
         setSignupSuccess,
@@ -98,4 +108,4 @@ export const useAuthFormAlertsStore = defineStore('auth-form-alerts', () => {
         setLoginSuccess,
         setLoginFailure
     }
-})
+});

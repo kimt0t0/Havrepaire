@@ -6,9 +6,7 @@ import { Languages } from '@/enums/languages.enum';
 const showLanguageDropdown = ref<boolean>(false);
 
 const toggleShowLanguageDropdown = (): void => {
-    console.log('Valeur dropdown avant: ', showLanguageDropdown.value);
     showLanguageDropdown.value = !showLanguageDropdown.value;
-    console.log('Valeur dropdown après: ', showLanguageDropdown.value);
 }
 
 </script>

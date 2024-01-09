@@ -1,12 +1,11 @@
-import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { JwtToken } from "@/interfaces/JwtToken.interface";
+import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore('authentication', () => {
     const activeUserToken = ref<string | null>(localStorage.getItem('authenticatedUser'));
 
-    const setActiveUserToken = (token: JwtToken): void => {
-        localStorage.setItem('authenticatedUser', JSON.stringify(token.access_token));
+    const setActiveUserToken = (access_token: string): void => {
+        localStorage.setItem('authenticatedUser', access_token);
         activeUserToken.value = localStorage.getItem('authenticatedUser');
     }
 

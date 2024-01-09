@@ -1,8 +1,8 @@
-import { ObjectId } from 'mongodb';
+import { IsArray, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
 import { Comment } from 'src/resources/comments/schemas/comment.schema';
 import { Like } from 'src/resources/likes/schemas/like.schema';
 import { Gender } from '../enums/gender.enum';
-import { IsArray, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
+import { Role } from '../enums/role.enum';
 
 export class UpdateUserDto {
     @IsString()
@@ -33,6 +33,10 @@ export class UpdateUserDto {
     @IsOptional()
     pronouns?: string;
 
+    @IsEnum(Role)
+    @IsOptional()
+    role?: Role;
+
     @IsArray()
     @IsOptional()
     likes?: Like[];
@@ -41,12 +45,4 @@ export class UpdateUserDto {
     @IsOptional()
     comments?: Comment[];
 
-    @IsString()
-    @IsOptional()
-    authorId?: string | ObjectId;
-
-    @IsString()
-    @Length(24)
-    @IsOptional()
-    articleId?: string | ObjectId;
 }

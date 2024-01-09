@@ -10,6 +10,7 @@ export interface User {
     email?: string;
     hash?: string;
     gender: Gender;
+    pronouns: string;
     role: Role;
     likes: Like[];
     comments: Comment[];

@@ -22,4 +22,4 @@ defineProps<{
     max-width: 100%;
     white-space: pre-line;
 }
-</style>@/enums/forms/alert-types.enum
+</style>

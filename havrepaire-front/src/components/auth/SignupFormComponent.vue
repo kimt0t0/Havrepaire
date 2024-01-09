@@ -17,13 +17,7 @@ const toggleShowPassword = (): void => {
     showPassword.value = !showPassword.value;
 }
 
-const signupFormData = reactive<NewUser>({
-    username: "",
-    password: "",
-    email: "",
-    gender: undefined,
-    pronouns: ''
-});
+const signupFormData = reactive<any>({});
 
 </script>
 
@@ -108,4 +102,4 @@ const signupFormData = reactive<NewUser>({
 .radio-input-line>input {
     cursor: pointer;
 }
-</style>@/enums/forms/input-types.enum@/enums/forms/alert-types.enum
+</style>
